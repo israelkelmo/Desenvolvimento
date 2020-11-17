@@ -1,0 +1,278 @@
+---
+title: "Desenvolvimento"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: readable #yeti #lumen
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(shiny)
+library(leaflet)
+library(leaflet.providers)
+library(plotly)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(rio)
+library(RColorBrewer)
+library(viridis)
+library(htmltools)
+library(corrplot)
+library(GGally)
+
+########
+firjan <- read.delim("dados/firjan.txt", sep = ";", header = T)
+municipios <- readRDS("dados/municipios.rds")
+estab_agro <- import("dados/localizacao_agricultura.csv", sep = ",")
+lavouras_tem_per <- import("dados/lavouras_tem_per.xls")
+caged <- import("dados/caged.xlsx", sheet = 5)
+emprego <- import("dados/emprego.xlsx")
+pib_mun <- import("dados/pib_mun.xlsx", sheet = 2)
+educacao_prova_brasil_mun <- import("educação/provabrasil2011/Dados/TS_RESULTADO_MUNICIPIO.csv")
+
+enem_escola <- import("educação/enem_escola/DADOS/MICRODADOS_ENEM_ESCOLA.csv", encoding = "Latin-1")
+
+
+
+########
+municipios2 <- municipios %>%
+  mutate(lat = as.numeric(lat), lng = as.numeric(lng), ifdm = as.numeric(gsub(",", ".", as.character(ifdm))), emp_rend = as.numeric(gsub(",", ".", as.character(emp_rend))), edu = as.numeric(gsub(",", ".", as.character(edu))))
+
+########
+
+pal <- colorNumeric(c("red", "orange", "yellow", "green"), 1:120)
+pal2 <- colorNumeric(c("red", "pink", "brown", "green","black"), 1:120)
+pal3 <- colorNumeric(c("red",  "green", "black"), 1:10)
+
+vars_paleta <- estab_agro %>%
+  select(NOM_TIPO_SEGLOGR) %>%
+  distinct() 
+ 
+  
+factpal <- colorFactor("inferno", vars_paleta[,1])
+
+
+
+
+```
+
+
+
+Firjan
+======================================================================
+
+Column {data-width=800 .tabset}
+----------------------------------------------------------------------
+
+### Mapa de MT - Firjan
+
+```{r}
+municipios2 %>%
+  leaflet() %>%
+  addProviderTiles(provider = providers$OpenTopoMap) %>%
+  addCircleMarkers(lat = municipios2$lat, lng = municipios2$lng, color = ~pal2(ifdm*100)) %>%
+  addLegend("bottomright", pal = pal2, values = ~ifdm*100)
+
+```
+
+### Relação IFDM, EMP, EDU
+
+```{r}
+  
+municipios2 %>%
+  plot_ly(z = ~ifdm, x = ~emp_rend, y = ~edu, color = ~mun, hoverinfo = "text", text = ~paste("Município:", mun, "<br>", "IFDM:", ifdm, "<br>", "IF - Educação:", edu, "<br>", "IF - Emprego e Renda:", emp_rend), showlegend = F) %>%
+  add_markers(alpha = 0.8, colors = "inferno") %>%
+  layout(title = 'sdfghsdg',
+         xaxis = list(showgrid = FALSE, title = "IF - Emprego e Renda"),
+         yaxis = list(showgrid = FALSE, title = "IF - Educação"),
+         zaxis = list(showgrid = F, title = "IFDM")) 
+
+```
+
+
+
+Column{width=200}
+---------------------------------------------------------------------
+
+
+### Dados de MT
+
+```{r}
+
+firjan %>%
+  arrange(mun) %>%
+  datatable()
+  
+```
+
+Emprego e Renda
+=======================================================================
+
+
+Column {width=1000 .tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Relação entre contratações e dispensas - 2020.
+
+```{r}
+
+emprego_mt <- emprego %>%
+  filter(UF == "MT") 
+
+emprego_mt %>%
+  plot_ly(hoverinfo = "text", text = ~paste("Admissões:", Admissões, "<br>", "Desligamentos:", Desligamentos, "<br>", "Cidade:", mun, "<br>", "IF - Emprego e Renda:", municipios2$emp_rend, "<br>", "Estoque total de empregos:", Estoque), size = ~log(Estoque), showlegend = F, alpha = 0.7, colors = "inferno") %>%
+  add_text(x = 5, y = 5, text = ~mes, frame = ~mesID,
+           textfont = list(color = toRGB("gray80"), size = 50)) %>%
+  add_markers(x = ~log(Admissões), y = ~log(Desligamentos), frame = ~mesID, color = ~mun) %>%
+  layout(title = 'Sua mãe',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE))
+
+
+
+```
+
+### Renda
+
+```{r}
+
+pib_mun %>%
+  mutate(`2002`= as.numeric(gsub(",", ".", as.character(`2002`))), `2003`= as.numeric(gsub(",", ".", as.character(`2003`))), `2004`= as.numeric(gsub(",", ".", as.character(`2004`)))) %>%
+  plot_ly(color = ~Município, colors = "inferno", showlegend = F, alpha = 0.5) %>%
+  add_markers(x = ~Município, y = ~`2002`) %>%
+  add_markers(x = ~Município, y = ~`2003`) %>%
+  add_markers(x = ~Município, y = ~`2004`) %>%
+  add_markers(x = ~Município, y = ~`2005`) %>%
+  add_markers(x = ~Município, y = ~`2006`) %>%
+  add_markers(x = ~Município, y = ~`2007`) %>%
+  add_markers(x = ~Município, y = ~`2008`) %>%
+  add_markers(x = ~Município, y = ~`2009`) %>%
+  add_markers(x = ~Município, y = ~`2010`) %>%
+  add_markers(x = ~Município, y = ~`2011`) %>%
+  add_markers(x = ~Município, y = ~`2012`) %>%
+  add_markers(x = ~Município, y = ~`2013`) %>%
+  add_markers(x = ~Município, y = ~`2014`) %>%
+  add_markers(x = ~Município, y = ~`2015`) %>%
+  add_markers(x = ~Município, y = ~`2016`) %>%
+  add_markers(x = ~Município, y = ~`2017`) %>%
+  layout(title = 'Sua mãe 2',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE, title = "PIB Municipal (R$ 1000) - 2002 à 2017")) 
+
+```
+
+Educação
+========================================================================
+
+Column {width=1000 .tabset .tabset-fade}
+------------------------------------------------------------------------
+
+### Prova Brasil - 2011
+
+```{r}
+educacao_prova_brasil_mun %>%
+  filter(SIGLA_UF == "MT") %>%
+  plot_ly(size = ~NU_PRESENTES, showlegend = F, colors = "inferno", hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_LP, "<br>", "Média (Matemática):", MEDIA_MT, "<br>", "Município:", NOME_MUNICIPIO, "<br>", "Presentes na prova:", NU_PRESENTES)) %>%
+  add_markers(x = ~MEDIA_MT, y = ~MEDIA_LP, alpha = 0.6, color = ~NOME_MUNICIPIO) %>%
+  layout(title = 'Sua mãe 3',
+         xaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
+         yaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)")) 
+
+```
+
+### ENEM por escola: 2005-2015
+
+```{r}
+teste1 <- enem_escola %>%
+  filter(SG_UF_ESCOLA == "MT", NU_ANO == 2008) %>%
+  mutate(NU_MEDIA_TOT = ((NU_MEDIA_RED + NU_MEDIA_OBJ)/2)*10)
+
+teste2 <- enem_escola %>%
+  filter(SG_UF_ESCOLA == "MT", NU_ANO %in% c(2009:2015)) %>%
+  mutate(NU_MEDIA_TOT = (NU_MEDIA_RED + NU_MEDIA_CN + NU_MEDIA_CH + NU_MEDIA_LP + NU_MEDIA_MT)/5)
+
+teste3 <- enem_escola %>%
+  filter(SG_UF_ESCOLA == "MT", NU_ANO %in% c(2005:2007)) %>%
+  mutate(NU_MEDIA_TOT = NU_MEDIA_TOT*10)
+
+desgraca <- teste3 %>%
+  bind_rows(teste1, teste2)
+  
+
+  desgraca %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA)) %>%
+  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
+    layout(title = 'Sua mãe 4',
+         xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola"),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM"))
+    
+
+
+```
+
+### Desempenho escolas ENEM: 2005-2015 (Rurais)
+
+```{r}
+desgraca %>%
+  filter(TP_LOCALIZACAO_ESCOLA == 2) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA)) %>%
+  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
+    layout(title = 'Sua mãe 4',
+         xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola"),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM")) 
+
+```
+
+
+### Indicador docente em relação às médias do ENEM, 2013-2015
+
+```{r}
+desgraca %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA)) %>%
+  add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
+    layout(title = 'Sua mãe 4',
+         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio."),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM")) 
+
+```
+
+### Desempenho docente em relação às médias do ENEM, 2013-2015 (Rurais)
+
+```{r}
+desgraca %>%
+  filter(TP_LOCALIZACAO_ESCOLA == 2) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA)) %>%
+  add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
+    layout(title = 'Sua mãe 4',
+         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio."),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM")) 
+
+```
+
+Agricultura
+====================================================================================
+
+
+
+Column {width=500 .tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### tab1 
+
+```{r}
+
+estab_agro %>%
+leaflet() %>%
+  addTiles() %>%
+  addCircles(lat = ~LATITUDE, lng = ~LONGITUDE, color = ~factpal(estab_agro$NOM_TIPO_SEGLOGR), label = ~htmlEscape(estab_agro$NOM_TIPO_SEGLOGR))
+  
+
+```
+
+ 
+
+
+ 
