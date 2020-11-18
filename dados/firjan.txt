@@ -1,0 +1,142 @@
+﻿mun;ifdm;emp_rend;edu
+Lucas do Rio Verde;0,8354;0,7240;0,9192
+Cuiabá;0,8266;0,7776;0,8202
+Diamantino;0,8182;0,6723;0,8716
+Sorriso;0,8179;0,7857;0,8304
+Campo Novo do Parecis;0,8176;0,7431;0,8333
+Sinop;0,8064;0,7419;0,8072
+Campo Verde;0,8032;0,7339;0,8017
+Nova Mutum;0,8006;0,6633;0,8659
+Rondonópolis;0,8004;0,6993;0,8323
+Primavera do Leste;0,7936;0,6359;0,8896
+Tangará da Serra;0,7923;0,7524;0,8187
+Itaúba;0,7912;0,6673;0,8043
+Alta Floresta;0,7865;0,6700;0,8353
+Porto dos Gaúchos;0,7843;0,7208;0,8124
+Araputanga;0,7837;0,6350;0,8093
+Juína;0,7816;0,6035;0,8594
+Planalto da Serra;0,7729;0,6580;0,7716
+Reserva do Cabaçal;0,7725;0,5273;0,8262
+Vera;0,7691;0,5929;0,8079
+Ipiranga do Norte;0,7679;0,6278;0,8456
+Nova Ubiratã;0,7672;0,6919;0,7683
+Campos de Júlio;0,7666;0,7201;0,8791
+Nova Marilândia;0,7553;0,6330;0,8710
+Itiquira;0,7552;0,6744;0,7842
+Salto do Céu;0,7537;0,5203;0,8481
+Terra Nova do Norte;0,7525;0,5203;0,8835
+Matupá;0,7520;0,6286;0,8515
+Tapurah;0,7458;0,6387;0,8309
+Sapezal;0,7444;0,6794;0,8302
+Nova Monte Verde;0,7376;0,5589;0,8133
+Juara;0,7373;0,6028;0,8307
+Querência;0,7367;0,6436;0,8058
+Tabaporã;0,7358;0,4951;0,8621
+Santa Carmem;0,7349;0,5757;0,8235
+Cláudia;0,7331;0,6361;0,7639
+Paranatinga;0,7299;0,5346;0,8100
+Novo São Joaquim;0,7292;0,6022;0,8526
+Água Boa;0,7292;0,5560;0,8912
+Cáceres;0,7281;0,6452;0,7563
+Alto Garças;0,7276;0,4790;0,8544
+Guarantã do Norte;0,7273;0,4759;0,8250
+Jaciara;0,7273;0,6536;0,8239
+Indiavaí;0,7269;0,5381;0,7275
+Nova Guarita;0,7268;0,3875;0,8584
+Torixoréu;0,7263;0,4480;0,9258
+Nova Santa Helena;0,7258;0,5450;0,8029
+Várzea Grande;0,7256;0,6102;0,7430
+São José do Xingu;0,7250;0,7594;0,7266
+Castanheira;0,7216;0,5213;0,7411
+Lambari D'Oeste;0,7176;0,6134;0,7045
+Glória D'Oeste;0,7171;0,4959;0,8306
+Barra do Bugres;0,7166;0,5434;0,7779
+Brasnorte;0,7147;0,6214;0,7030
+Novo Horizonte do Norte;0,7137;0,4775;0,7968
+Mirassol d'Oeste;0,7116;0,5694;0,7992
+São José do Rio Claro;0,7114;0,4626;0,8184
+Novo Mundo;0,7099;0,4732;0,7589
+Canarana;0,7071;0,6696;0,7665
+Alto Taquari;0,7065;0,4932;0,8205
+Marcelândia;0,7054;0,5251;0,8206
+Alto Araguaia;0,7045;0,5197;0,7847
+Santa Rita do Trivelato;0,7035;0,5296;0,8744
+Conquista D'Oeste;0,7014;0,5771;0,7904
+Nova Xavantina;0,7006;0,5378;0,7854
+União do Sul;0,6999;0,4173;0,8535
+São José dos Quatro Marcos;0,6995;0,4776;0,8018
+Santo Antônio do Leverger;0,6978;0,5241;0,7971
+Araguaiana;0,6972;0,5944;0,7698
+Pedra Preta;0,6951;0,6540;0,8001
+Cocalinho;0,6947;0,6410;0,7701
+Ribeirãozinho;0,6922;0,5317;0,9033
+Nobres;0,6871;0,4099;0,8105
+Nova Bandeirantes;0,6825;0,4184;0,7673
+Arenápolis;0,6816;0,4277;0,9005
+Cotriguaçu;0,6803;0,4150;0,7228
+Barra do Garças;0,6799;0,6045;0,7999
+Santa Cruz do Xingu;0,6793;0,6608;0,7566
+Aripuanã;0,6788;0,4343;0,7714
+Nossa Senhora do Livramento;0,6779;0,5200;0,7865
+Figueirópolis D'Oeste;0,6748;0,5125;0,8184
+Alto Paraguai;0,6732;0,4427;0,6877
+Carlinda;0,6703;0,4130;0,7738
+Peixoto de Azevedo;0,6658;0,4895;0,7680
+Poxoréu;0,6650;0,4268;0,7740
+Pontes e Lacerda;0,6640;0,4781;0,7811
+Jangada;0,6614;0,4074;0,7544
+Chapada dos Guimarães;0,6605;0,4691;0,7404
+Nortelândia;0,6600;0,4956;0,8291
+Rio Branco;0,6596;0,4650;0,8126
+Porto Esperidião;0,6579;0,5794;0,7311
+Nova Maringá;0,6579;0,4538;0,7923
+Nova Canaã do Norte;0,6559;0,3612;0,8115
+Colíder;0,6550;0,5082;0,8352
+Apiacás;0,6508;0,4316;0,7578
+Santo Antônio do Leste;0,6474;0,4832;0,7212
+Comodoro;0,6472;0,5291;0,7849
+Acorizal;0,6469;0,4825;0,7745
+Jauru;0,6463;0,4511;0,7960
+Feliz Natal;0,6455;0,5006;0,6935
+Juruena;0,6426;0,4484;0,7338
+Curvelândia;0,6418;0,4595;0,7955
+Itanhangá;0,6399;0,3093;0,8126
+Rondolândia;0,6395;0,6007;0,6263
+Serra Nova Dourada;0,6391;0,5275;0,7015
+Confresa;0,6378;0,5373;0,7575
+Nova Brasilândia;0,6376;0,5507;0,7989
+Santo Afonso;0,6370;0,3978;0,7791
+Poconé;0,6351;0,4159;0,7570
+Colniza;0,6331;0,4218;0,7006
+Tesouro;0,6312;0,3914;0,6506
+Pontal do Araguaia;0,6293;0,4681;0,7405
+Juscimeira;0,6283;0,4068;0,8653
+Nova Lacerda;0,6242;0,4487;0,7281
+Porto Estrela;0,6220;0,5915;0,7227
+Vale de São Domingos;0,6210;0,4816;0,7750
+Nova Olímpia;0,6208;0,5871;0,7733
+Luciara;0,6195;0,5039;0,7871
+Ribeirão Cascalheira;0,6180;0,5172;0,7486
+Canabrava do Norte;0,6127;0,4689;0,7569
+Paranaíta;0,6112;0,3559;0,8272
+São Pedro da Cipa;0,6108;0,2675;0,8315
+Barão de Melgaço;0,6090;0,3826;0,7319
+Dom Aquino;0,6061;0,5091;0,8260
+Novo Santo Antônio;0,6042;0,4322;0,7060
+Vila Bela da Santíssima Trindade;0,6001;0,4263;0,6845
+Rosário Oeste;0,5956;0,4704;0,7069
+Araguainha;0,5941;0,6460;0,6823
+São José do Povo;0,5936;0,2964;0,7402
+Porto Alegre do Norte;0,5852;0,4468;0,7212
+Guiratinga;0,5819;0,3583;0,7490
+Bom Jesus do Araguaia;0,5756;0,6450;0,7506
+Alto Boa Vista;0,5733;0,4543;0,7462
+Santa Terezinha;0,5719;0,4888;0,6819
+São Félix do Araguaia;0,5718;0,6289;0,6580
+Ponte Branca;0,5706;0,5220;0,7406
+Denise;0,5628;0,4394;0,7465
+Gaúcha do Norte;0,5535;0,5874;0,6272
+Vila Rica;0,5166;0,4711;0,7154
+Nova Nazaré;0,4948;0,5128;0,4572
+Campinápolis;0,4882;0,4934;0,5426
+General Carneiro;0,4813;0,4342;0,6678
