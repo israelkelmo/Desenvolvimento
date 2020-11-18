@@ -32,10 +32,11 @@ caged <- import("dados/caged.xlsx", sheet = 5)
 emprego <- import("dados/emprego.xlsx")
 pib_mun <- import("dados/pib_mun.xlsx", sheet = 2)
 educacao_prova_brasil_mun <- import("educação/provabrasil2011/Dados/TS_RESULTADO_MUNICIPIO.csv")
-
 enem_escola <- import("educação/enem_escola/DADOS/MICRODADOS_ENEM_ESCOLA.csv", encoding = "Latin-1")
-
-
+rais <- import("dados/rais.xlsx", sheet = 6)
+rais <- rais[2:5573,]
+gini_mun <- import("dados/ginibr.xlsx")
+pib_per_capta <- import("dados/RENDABR10.dbf")
 
 ########
 municipios2 <- municipios %>%
@@ -164,6 +165,51 @@ pib_mun %>%
 
 ```
 
+### Emprego por setor
+
+```{r}
+
+rais %>%
+  filter(UF == "MT") %>%
+  plot_ly(showlegend = F) %>%
+  add_boxplot(x = ~log(agro_2018), name = "Agricultura 2018") %>%
+  add_boxplot(x = ~log(agro_2019), name = "Agricultura 2019") %>%
+  add_boxplot(x = ~log(indus_2018), name = "Indústria 2018") %>%
+  add_boxplot(x = ~log(indus_2019), name = "Indústria 2019") %>%
+  add_boxplot(x = ~log(constr_2018), name = "Construção Civil 2018") %>%
+  add_boxplot(x = ~log(constr_2019), name = "Construção Civíl 2019") %>%
+  add_boxplot(x = ~log(comer_2018), name = "Comércio 2018") %>%
+  add_boxplot(x = ~log(comer_2019), name = "Comércio 2019") %>%
+  add_boxplot(x = ~log(serv_2018), name = "Serviços 2018") %>%
+  add_boxplot(x = ~log(serv_2019), name = "Serviços 2019") %>%
+  layout(title = 'pinto',
+         xaxis = list(showgrid = FALSE, title = " "),
+         yaxis = list(showgrid = FALSE)) 
+
+  
+  
+
+```
+
+### Gini e  somatório da renda média domiciliar per capita
+
+```{r}
+pib_per_capta %>%
+  select(MUNCOD, NUMRENDA) %>%
+  group_by(MUNCOD) %>%
+  filter(MUNCOD %in% c(510010:510895)) %>%
+  summarize(renda_per_media = mean(NUMRENDA)) %>%
+  bind_cols(mun = gini_mun$Município) %>%
+  bind_cols(gini = gini_mun$`2010`) %>%
+  plot_ly(showlegend = F, hoverinfo = "text", text = ~paste("Município:", mun, "<br>", "Média do somatório da renda <i>per capita</i>:", renda_per_media, "<br>", "Gini municipal:", gini)) %>%
+  add_markers(x = ~gini, y = ~log(renda_per_media), color = ~mun, colors = "inferno", size = ~log(renda_per_media), alpha = 0.6) %>%
+  layout(title = 'pinto 2',
+         xaxis = list(showgrid = FALSE, title = "Gini municipal"),
+         yaxis = list(showgrid = FALSE, title = "Média do somatório da renda domiciliar (log)"))
+  
+
+```
+
 Educação
 ========================================================================
 
@@ -203,7 +249,7 @@ desgraca <- teste3 %>%
   
 
   desgraca %>%
-  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA)) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
   add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
     layout(title = 'Sua mãe 4',
          xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola"),
@@ -218,7 +264,7 @@ desgraca <- teste3 %>%
 ```{r}
 desgraca %>%
   filter(TP_LOCALIZACAO_ESCOLA == 2) %>%
-  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA)) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
   add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
     layout(title = 'Sua mãe 4',
          xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola"),
@@ -231,7 +277,7 @@ desgraca %>%
 
 ```{r}
 desgraca %>%
-  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA)) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
   add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
     layout(title = 'Sua mãe 4',
          xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio."),
@@ -244,7 +290,7 @@ desgraca %>%
 ```{r}
 desgraca %>%
   filter(TP_LOCALIZACAO_ESCOLA == 2) %>%
-  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA)) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
   add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
     layout(title = 'Sua mãe 4',
          xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio."),
