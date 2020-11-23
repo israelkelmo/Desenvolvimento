@@ -210,24 +210,28 @@ pib_per_capta %>%
 
 ```
 
-Educação
+Educação (10 melhores municípios) {data-navmenu="Educação"}
 ========================================================================
 
 Column {width=1000 .tabset .tabset-fade}
 ------------------------------------------------------------------------
 
-### Prova Brasil - 2011
+### Prova Brasil - Top 10 mun Firjan
 
 ```{r}
-educacao_prova_brasil_mun %>%
-  filter(SIGLA_UF == "MT") %>%
-  plot_ly(size = ~NU_PRESENTES, showlegend = F, colors = "inferno", hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_LP, "<br>", "Média (Matemática):", MEDIA_MT, "<br>", "Município:", NOME_MUNICIPIO, "<br>", "Presentes na prova:", NU_PRESENTES)) %>%
+oco <- educacao_prova_brasil_mun %>%
+  filter(SIGLA_UF == "MT", NOME_MUNICIPIO %in% c("LUCAS DO RIO VERDE", "CUIABA", "DIAMANTINO", "SORRISO", "CAMPO NOVO DO PARECIS", "SINOP", "CAMPO VERDE", "NOVA MUTUM", "RONDONOPOLIS", "PRIMAVERA DO LESTE")) %>%
+  plot_ly(size = ~NU_PRESENTES, showlegend = T, colors = "inferno", hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_LP, "<br>", "Média (Matemática):", MEDIA_MT, "<br>", "Município:", NOME_MUNICIPIO, "<br>", "Presentes na prova:", NU_PRESENTES)) %>%
   add_markers(x = ~MEDIA_MT, y = ~MEDIA_LP, alpha = 0.6, color = ~NOME_MUNICIPIO) %>%
   layout(title = '',
          xaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
-         yaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)")) 
+         yaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
+         legend = list(orientation = 'h')) 
+oco
+
 
 ```
+
 
 ### ENEM por escola: 2005-2015
 
@@ -248,27 +252,31 @@ desgraca <- teste3 %>%
   bind_rows(teste1, teste2)
   
 
-  desgraca %>%
-  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
-  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
-    layout(title = '',
-         xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola"),
-         yaxis = list(showgrid = FALSE, title = "Média ENEM"))
+pinto1 <- desgraca %>%
+    filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste")) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = T, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
+     layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 700)))
+pinto1
     
 
 
 ```
 
-### Desempenho escolas ENEM: 2005-2015 (Rurais)
+### Desempenho escolas ENEM: 2005-2015 (Exceto privadas)
 
 ```{r}
-desgraca %>%
-  filter(TP_LOCALIZACAO_ESCOLA == 2) %>%
-  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
-  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
+pinto3 <- desgraca %>%
+    filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA != 4) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = T, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
     layout(title = '',
          xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola"),
-         yaxis = list(showgrid = FALSE, title = "Média ENEM")) 
+         yaxis = list(showgrid = FALSE, title = "Média ENEM"))
+pinto3
+    
 
 ```
 
@@ -276,25 +284,182 @@ desgraca %>%
 ### Indicador docente em relação às médias do ENEM, 2013-2015
 
 ```{r}
-desgraca %>%
-  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
-  add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
+pinto5 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste")) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = T, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>","Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
     layout(title = '',
-         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio."),
-         yaxis = list(showgrid = FALSE, title = "Média ENEM")) 
+         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio.", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 700))) 
+
+pinto5
 
 ```
 
-### Desempenho docente em relação às médias do ENEM, 2013-2015 (Rurais)
+### Desempenho docente em relação às médias do ENEM, 2013-2015 (Exceto privadas)
 
 ```{r}
-desgraca %>%
-  filter(TP_LOCALIZACAO_ESCOLA == 2) %>%
-  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+pinto7 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA != 4) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
   add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
     layout(title = '',
-         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio."),
-         yaxis = list(showgrid = FALSE, title = "Média ENEM")) 
+         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio.", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 100))) 
+pinto7
+
+```
+
+### Taxa de abandono
+
+```{r}
+subplot1 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA == 1) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "inferno") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA) %>%
+  layout(annotations = list(text = "Federais", x = 1.5, y = 2, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot2 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA == 2) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = T, colors = "inferno") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA) %>%
+  layout(annotations = list(text = "Estaduais", x = 4.5, y = 70, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE)) 
+
+subplot3 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA == 3) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "inferno") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA)%>%
+  layout(annotations = list(text = "Municipais", x = 0, y = 1, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot4 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA == 4, NU_TAXA_ABANDONO < 30) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "inferno") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA)%>%
+  layout(annotations = list(text = "Privadas", x = 4.5, y = 50, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot(subplot1, subplot2, subplot3, subplot4, nrows = 2, shareX = T)
+
+
+
+```
+
+Educação (Comparação entre 10 melhores e 10 piores) {data-navmenu="Educação"}
+=======================================================================
+
+
+
+Column {width=1000 .tabset .tabset-fade}
+------------------------------------------------------------------------
+
+### Prova Brasil - comparação
+
+```{r}
+oco2 <- educacao_prova_brasil_mun %>%
+  filter(SIGLA_UF == "MT", NOME_MUNICIPIO %in% c("GENERAL CARNEIRO", "CAMPINAPOLIS", "NOVA NAZARE", "VILA RICA", "GAUCHA DO NORTE", "DENISE", "PONTE BRANCA", "SAO FELIX DO ARAGUAIA", "SANTA TEREZINHA", "ALTO BOA VISTA")) %>%
+  plot_ly(size = ~NU_PRESENTES, showlegend = T, colors = "viridis", hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_LP, "<br>", "Média (Matemática):", MEDIA_MT, "<br>", "Município:", NOME_MUNICIPIO, "<br>", "Presentes na prova:", NU_PRESENTES)) %>%
+  add_markers(x = ~MEDIA_MT, y = ~MEDIA_LP, alpha = 0.6, color = ~NOME_MUNICIPIO) %>%
+  layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
+         yaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
+         legend = list(orientation = 'h')) 
+
+subplot(oco, oco2, nrows = 1)
+
+
+```
+
+### ENEM por escola: 2005-2015 (Comparação)
+
+```{r}
+pinto2 <- desgraca %>%
+    filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista")) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "viridis", showlegend = T, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
+    layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 700)))
+
+subplot(pinto1, pinto2, nrows = 2)
+```
+
+### Desempenho escolas ENEM: 2005-2015 (comparação, Exceto privadas)
+
+```{r}
+pinto4 <- desgraca %>%
+    filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA != 4) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "viridis", showlegend = T, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
+    layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 730)))
+
+subplot(pinto3, pinto4, nrows = 2)
+    
+
+```
+
+### Indicador docente em relação às médias do ENEM, 2013-2015
+
+```{r}
+pinto6 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista")) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "viridis", showlegend = T, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>","Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
+    layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio.", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 700))) 
+
+subplot(pinto5, pinto6, nrows = 2)
+
+
+```
+
+### Desempenho docente em relação às médias do ENEM, 2013-2015 (Comparação, exceto privadas)
+
+```{r}
+pinto8 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA != 4) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
+    layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio.", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 100))) 
+subplot(pinto7, pinto8, nrows = 2)
+
+```
+
+### Taxa de abandono (comparação)
+
+```{r}
+subplot5 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA == 1) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "viridis") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA) %>%
+  layout(annotations = list(text = "Federais", x = 1.5, y = 2, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot6 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA == 2) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = T, colors = "viridis") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA) %>%
+  layout(annotations = list(text = "Estaduais", x = 4.5, y = 70, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE)) 
+
+subplot7 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA == 3) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "viridis") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA)%>%
+  layout(annotations = list(text = "Municipais", x = 1.5, y = 1, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot8 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA == 4, NU_TAXA_ABANDONO < 30) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "viridis") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA)%>%
+  layout(annotations = list(text = "Privadas", x = 0.5, y = 50, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot(subplot1, subplot2, subplot3, subplot4, subplot6, subplot8, nrows = 3, shareX = F)
+
+  
+
+
 
 ```
 
