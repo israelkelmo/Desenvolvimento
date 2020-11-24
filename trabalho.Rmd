@@ -301,7 +301,7 @@ pinto5
 ```{r}
 pinto7 <- desgraca %>%
   filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA != 4) %>%
-  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = T, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
   add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
     layout(title = '',
          xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio.", range = c(0, 100)),
@@ -419,7 +419,7 @@ subplot(pinto5, pinto6, nrows = 2)
 ```{r}
 pinto8 <- desgraca %>%
   filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA != 4) %>%
-  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "viridis", showlegend = T, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
   add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
     layout(title = '',
          xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio.", range = c(0, 100)),
