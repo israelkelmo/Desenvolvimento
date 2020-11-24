@@ -4,7 +4,7 @@
 
 Dados retirados do IBGE e do INEP
 
-**Objetivo:** Mostrar como a agricultura causa viés nos indicadores de desenvolvimento econômico, principalmente na educação.
+**Objetivo:** Apresentar a discrepância entre os indicadores de desenvolvimento econômico municipal e o desempenho da educação nos mesmos municípios.
 
 
 
