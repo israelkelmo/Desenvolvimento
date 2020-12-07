@@ -1,0 +1,794 @@
+---
+title: ""
+output: html_document
+css: 'css.css'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(leaflet)
+library(leaflet.providers)
+library(plotly)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(rio)
+library(RColorBrewer)
+library(viridis)
+library(htmltools)
+library(corrplot)
+library(GGally)
+
+########
+firjan <- read.delim("dados/firjan.txt", sep = ";", header = T)
+municipios <- readRDS("dados/municipios.rds")
+estab_agro <- import("dados/localizacao_agricultura.csv", sep = ",")
+lavouras_tem_per <- import("dados/lavouras_tem_per.xls")
+caged <- import("dados/caged.xlsx", sheet = 5)
+emprego <- import("dados/emprego.xlsx")
+pib_mun <- import("dados/pib_mun.xlsx", sheet = 2)
+educacao_prova_brasil_mun <- import("TS_RESULTADO_MUNICIPIO.csv")
+enem_escola <- import("MICRODADOS_ENEM_ESCOLA.csv", encoding = "Latin-1")
+rais <- import("dados/rais.xlsx", sheet = 6)
+rais <- rais[2:5573,]
+gini_mun <- import("dados/ginibr.xlsx")
+pib_per_capta <- import("dados/RENDABR10.dbf")
+
+########
+municipios2 <- municipios %>%
+  mutate(lat = as.numeric(lat), lng = as.numeric(lng), ifdm = as.numeric(gsub(",", ".", as.character(ifdm))), emp_rend = as.numeric(gsub(",", ".", as.character(emp_rend))), edu = as.numeric(gsub(",", ".", as.character(edu))))
+
+########
+
+pal <- colorNumeric(c("red", "orange", "yellow", "green"), 1:120)
+pal2 <- colorNumeric(c("red", "pink", "brown", "green","black"), 1:120)
+pal3 <- colorNumeric(c("red",  "green", "black"), 1:10)
+
+vars_paleta <- estab_agro %>%
+  select(NOM_TIPO_SEGLOGR) %>%
+  distinct() 
+ 
+  
+factpal <- colorFactor("inferno", vars_paleta[,1])
+
+```
+<table class="modificada2">
+<tr>
+<th style="width: 10%"><img src="https://64.media.tumblr.com/95b4b32e6fcd4816fdcb4bf72434dfd2/8c073ff600142848-b5/s2048x3072/660ce221acee6d2146d5d1d3adc2fe3014a14a49.png" width="100%"></th><th>UNIVERSIDADE FEDERAL DE MATO GROSSO<br/>FACULDADE DE ECONOMIA</th><th style="width:10%"><img src="https://64.media.tumblr.com/f56f0a79078809185f75447325842fa4/6b447b0e13bf2894-a2/s1280x1920/a56764a6d25b4a5ba1682e0c56abf9b44b6939b1.jpg" width="100%"></td>
+</tr>
+</table>
+<br/>
+
+<p class="citacao" style="margin-right: 2%; margin-left: 60%">
+<b>Discentes:</b> Caio Hatanaka; Elisama Ribeiro;<br/> Israel Kelmo; Lucas Dorna e Luigi Martinelli.</br>
+<b>Docente:</b> Prof. Dr. Alexandro Rodrigues Ribeiro.</p> 
+<br/>
+
+<h1 class="titulo"><b>REAL DESEMPENHO EDUCACIONAL EM COMPARAÇÃO AOS VALORES DOS INDICADORES EDUCACIONAIS: UMA ANÁLISE DO IFDM DE MATO GROSSO, 2005-2015</b></h1>
+<br/>
+
+<p class="tituloresumo">Resumo</p>
+
+<p class="resumo">
+A educação é uma das variáveis-chave que determina o nível de desenvolvimento de uma sociedade e sua oferta deve atender às necessidades sociais. A finalidade deste trabalho é verificar se os valores estimados do Índice Firjan de Desenvolvimento Municipal (IFDM) educacional refletem o real desempenho da educação, e seus agentes, nos municípios do Estado de Mato Grosso (MT), entre 2005 e 2015. Assim, foram realizadas análises exploratórias dos dados do IFDM, com foco no Índice educacional, assumindo a ideia de que o IFDM elevado, em comparação com a realidade, não reflete o real nível educacional dos municípios mato-grossenses. Os resultados encontrados foram que, apesar de 88% dos municípios de MT apresentarem um IFDM de moderadamente desenvolvidos, o desempenho dos dez municípios com IFDM mais elevados com os dez mais baixos, os resultados, tanto na Prova Brasil quanto no ENEM, foram semelhantes, diferindo-se apenas na quantidade de escolas participantes.</p>
+
+<p class="resumo"><b>Palavras-chave:</b> IFDM; Índice Educacional; Mato Grosso.</p>
+<br/>
+
+<p class="tituloresumo">Abstract</p>
+
+<p class="abstract">
+Education is one of the key variables that determines the level of development of a society and its offer must meet social needs. The purpose of this work is to verify whether the estimated values of the Firjan Educational Municipal Development Index (IFDM) reflect the real performance of education, and its agents, in the municipalities of the State of Mato Grosso (MT), between 2005 and 2015. Thus, exploratory analyses of the MFI data were performed, focusing on the educational index, assuming the idea that the high MIF, compared to reality, does not reflect the real educational level of the municipalities of Mato Grosso. The results found were that, although 88% of the municipalities of MT presented a moderately developed MDM, the performance of the ten municipalities with higher MDM with the lowest ten, the results, both in the Brazil Test and in the ENEM, were similar, differing only in the number of participating schools.</p>
+
+<p class="resumo"><b>Keywords:</b> IFDM; Educational Index; Mato Grosso.</p>
+<br/>
+
+<p class="section">1\. INTRODUÇÃO</p>
+
+<p class="normal">
+O desenvolvimento é fator que representa a evolução das sociedades ao longo do tempo. Uma nação com capacidade de utilizar suas riquezas em prol do benefício da sociedade e dos futuros membros de sua comunidade tem um potencial de ascensão maior a longo prazo. Schumpeter conceitualiza o desenvolvimento econômico como transformações econômicas e produtivas que ocorrem nos territórios onde as empresas inovadoras estão localizadas e há atividades motoras do desenvolvimento condicionando sua especialização produtiva e sua competitividade nos mercados (BARQUERO, 2014).</p>
+
+
+<p class="normal">
+Desenvolver economicamente uma nação exige uma cooperação mútua entre os objetivos da sociedade e os objetivos dos governantes. Desenvolver é garantir que haja bem-estar social e geração de riquezas; tanto para as gerações atuais quanto para as gerações futuras.</p>
+
+<p class="normal">
+Desenvolvimento econômico difere-se do crescimento econômico. O crescimento está relacionado com a variação positiva das variáveis quantitativas utilizadas nos parâmetros mensurados dentro da economia; logo, uma sociedade pode apresentar um considerável crescimento econômico mas não refletir seu desempenho em benefícios à população ou ao comércio.</p>
+
+
+<p class="normal">
+Dentro da estética do desenvolvimento econômico, temos a educação como um dos determinantes dos resultados observados tanto no curto e longo prazo. Uma sociedade com alto grau educacional tem a capacidade de obter melhores salários, melhor qualidade de vida e melhor desenvolvimento social e tecnológico. O suporte educacional é importante tanto nos estágios iniciais do desenvolvimento humano quanto nos estágios posteriores. O investimento em educação deve estar alinhado tanto com as necessidades sociais quanto com o papel das instituições governamentais. A falha em distribuir o investimento de forma a ignorar as reais necessidades da população gera um viés analítico; passando uma impressão de desenvolvimento que não é observado na realidade.</p>
+
+<p class="normal">
+Dentro da metodologia econômica, existem diferentes formas de mensurar o desenvolvimento econômico de uma região. Normalmente, o desenvolvimento é representado por um indicador cujo os valores variam entre zero e um. Dentro dos indicadores, estão presentes os dados quantitativos levantados em cada uma das áreas de interesse do desenvolvimento econômico; e os mesmos estão associados com parâmetros de "peso" que representam o quão impactante é a área de interesse para o desenvolvimento. Entretanto, a crescente evolução de uma área específica da economia pode enviesar o resultado final do indicador, mostrando uma realidade numérica que não é observada no mundo real. Este trabalho busca verificar se os valores estimados do Índice Firjan de Desenvolvimento Municipal (IFDM) educacional refletem o real desempenho da educação -- e seus agentes -- nos municípios do Estado de Mato Grosso (MT).</p>
+
+<p class="normal">
+Dessa forma, o problema do trabalho consiste em verificar se o IFDM educacional dos municípios de MT não reflete a real situação educacional de cada um. Tendo como hipótese, a ideia de que o IFDM elevado, em comparação com a realidade, mascara a condição educacional a que cada indivíduo dos municípios mato-grossenses são submetidos.</p>
+
+<p class="normal">
+Para a realização dessa análise, a proposta metodológica resume-se em uma análise exploratória dos dados considerados dentro do IFDM, com especial foco no Índice educacional, para entender o comportamento individual das variáveis em cada um dos 141 municípios de Mato Grosso.</p>
+
+<p class="normal">
+Para alcançar o objetivo estabelecido, o trabalho está dividido em cinco seções, na qual, além desta introdução, é desenvolvido a revisão bibliográfica (seção 2), a metodologia utilizada (seção 3), os resultados obtidos com a aplicação da metodologia com a sua respectiva discussão (seção 4) e, por fim, as considerações finais.</p>
+<br/>
+
+<p class="section">2\. REVISÃO BIBLIOGRÁFICA</p>
+
+<p class="normal">
+Neste artigo, a base teórica utilizada será provida pelos argumentos presentes em três diferentes áreas de estudo; as teorias do crescimento econômico; as teorias do desenvolvimento tecnológico e as teorias do desenvolvimento econômico.</p>
+
+<p class="normal">
+Para as áreas sobre "Capital Humano" e "Desenvolvimento e Educação", que são o foco central do artigo, foi realizada uma analise bibliométrica na base de dados do Scopus para obter os principais artigos influentes na discussão e o atual estado da arte teórica. Na tabela abaixo estão organizadas as <i>querys</i> utilizadas na busca e a quantidade de artigos retornados.</p> 
+
+<p class="tabela">Tabela 1 - <i>Querys</i> utilizadas e quantidade de artigos retornados, Scopus.</p>
+
+<table class="modificada2">
+<tr style="border-top: 3px solid black; border-bottom: 2px solid black;">
+<th>Query utilizada</th><th>Total de Artigos</th>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>TITLE-ABS-KEY("Human capital") AND SUBJAREA(econ) AND (EXCLUDE(PUBYEAR, 2021))</td><td>11.991</td>
+</tr><tr style="border-bottom: 3px solid black;">
+<td>TITLE-ABS-KEY("Education" AND "Development" AND "Schools") AND SUBJAREA(econ) AND (EXCLUDE(PUBYEAR, 2021))</td><td>1.691</td>
+</tr><table>
+
+<p class="ref">
+Fonte: Desenvolvido pelo autor com base nos dados retirados do Scopus no dia 24/11/2020.</p>
+<br/>
+
+<p class="section">2.1 Desenvolvimento e crescimento econômico</p>
+
+<p class="normal">
+ abordagem do desenvolvimento e crescimento econômico segue diversas vertentes; tal qual os primeiros postulados foram realizados juntos às considerações ricardianas sobre o comércio internacional e as vantagens comparativas. A evolução do capitalismo e a ascensão da economia de mercado trouxe a obsolência sobre às argumentações dos autores clássicos; exigindo então uma reformulação teórica --- ou atualização --- que fosse capaz de explicar de forma clara e coesa a realidade econômica. Keynes (1936) inicia uma corrente teórica que busca explicar o comportamento da economia através dos agregados macroeconômicos, dando importância para variáveis como o Produto Interno Bruto (PIB); investimento agregado; consumo das famílias e das empresas; poupança --- seja ela privada, agregada (soma de todas as poupanças) ou governamental ---. A conceitualização dos agregados permitiu a existência de novas contribuições que buscavam explicar a economia de forma a considerar tanto o macro e suas variáveis, como os modelos de crescimento de Kaldor (1957) e Thirlwall (1979); os modelos voltados ao capital humano como Romer (1989) e Lucas (1988).</p>
+ 
+<p class="normal">
+Schumpeter adentra à Teoria do Desenvolvimento propondo uma visão da tecnologia como fator-chave para a mudança estrutural do capitalismo. Para Schumpeter (1942), a inovação tecnológica é capaz de transformar o capitalismo de forma a quebrar paradigmas consolidados no mercado --- como monopólios --- onde as empresas inovadoras --- e os empresários responsáveis --- buscam através da inovação e da incrementação tecnológica criar bens, serviços e processos que tornam empresas incapazes de acompanhar o ritmo do progresso técnico sujeitas à decadência estrutural e competitiva. Schumpeter (1942) considera que a inovação não surge de forma espontânea; para tal, é necessário todo um suporte técnico e estrutural para que sejam realizadas as tarefas de Pesquisa e Desenvolvimento (P&D). Existe a diferença entre as considerações de Schumpeter sobre a origem da inovação. O período chamado de "Schumpeter Mark I" é associado à visão do autor ao considerar que a inovação poderia surgir de forma espontânea através da iniciativa individual partida de qualquer membro da sociedade. Já "Schumpeter Mark II" é a mudança argumentativa do autor ao afirmar que a tecnologia só surge se houver suporte estrutural para que a mesma seja realizada, exigindo considerável capital e impossibilitando que ela possa ser feita por qualquer indivíduo.</p>
+
+<p class="normal">
+A abordagem Institucionalista do Desenvolvimento Econômico abrange considerações relevantes propostas por todo Século XX. Davis e North (1971) apresentam a importância das instituições como forma de regular e prover o desenvolvimento econômico das sociedades. As Instituições, segundo North, são as "regras do jogo" presentes dentro de uma sociedade; essas regras estão tanto no âmbito das leis quanto na construção cultural específica do grupo em questão. As Instituições governam e regulam a sociedade na busca pelos interesses gerais da nação, possibilitando que os agentes econômicos possam realizar suas escolhas com grau de liberdade considerável.</p>
+
+<p class="normal">
+North (1959) pontua que os fatores que influenciam o crescimento da economia local estão em (I) A estrutura geográfica da região, assim como fatores climáticos e de proximidade com os grandes centros; (II) A proximidade com matrizes produtivas semelhantes, gerando uma cooperação mútua dentro da produção; (III) A abundância de recursos naturais próximos que auxiliem na cadeia produtiva; (IV) O comportamento econômico da região — se o comércio é focado no mercado interno ou externo; como a região se integra em diferentes mercados —; (V) A eficiência dos investimentos produtivos e seus impactos dentro da cadeia produtiva; (VI) A capacidade de crescimento da agricultura em conjunto ao crescimento industrial; (VII) A organização inicial da região; (VIII) Características da população local, como a aceitação dos produtos e o tipo de consumo dos agentes e (IX) Como a renda gerada na região é distribuída. Logo, o autor considera a importância de relacionar tanto a questão econômica quanto a questão social, sendo considerado o bem-estar da população local. Uma comunidade não se desenvolverá caso não haja o reinvestimento das riquezas geradas em meios que proporcionem o desenvolvimento social, sustentável e estrutural tanto no curto, médio ou longo-prazo.</p>
+<br/>
+
+<p class="section">2.2 Capital Humano</p>
+
+<p class="normal">
+Ao aplicar a metodologia de Aria e Cuccurullo (2017) nos dados referentes ao Capital Humano, obtivemos a seguinte <i>network</i> de co-citação de artigos que é exibida na figura abaixo.</p>
+
+<p class="tabela">Figura 1 - <i>Network</i> de co-citação referente ao tema "Capital Humano".</p>
+<center>
+<img src="https://64.media.tumblr.com/da95fbf51dae58d51b322734602792f7/13c0d1fe2bca939b-86/s1280x1920/6a80e2d1f77958c6309a43321d4897efaf035126.png" width="80%">
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados retirados do Scopus no dia 24/11/2020.</p>
+
+<p class="normal">
+Rompendo com os padrões das contribuições teóricas clássicas sobre o crescimento econômico, que atribui à variáveis, como a tecnologia (melhoramento de forma automática e não modelada) e o trabalho (dado e sem possibilidade de ter seu desempenho aumentado), caráter exógeno, teóricos da teoria do crescimento endógeno atribuem papel importante a educação e a pesquisa e desenvolvimento (P&D), como um dos principais fatores que promovem um desenvolvimento econômico sustentável.</p>
+
+<p class="normal">
+Contribuições a visão do trabalho como endógeno iniciaram-se com a ideia elementar de que os trabalhadores, força de trabalho, eram quem decidiam a respeito da educação, do treinamento e dos cuidados de saúde que recebiam. Deste modo, o mercado de trabalho não poderia ser considerado como pré-definido, com sua força produtiva dada, podendo ser modelado com incentivos, investimentos e programas educacionais aos trabalhadores. De forma, que, os trabalhadores poderiam tomar a decisão de se capacitar e modificar suas respectivas posições no mercado de trabalho. Com essa ideia inicial, é introduzido o conceito de capital humano na teoria econômica, com ele se posicionando como um dos integrantes da força de trabalho -- que se fragmentou em duas -- (KRASNIQI; TOPXHIU, 2016).</p>
+
+<p class="normal">
+Conforme Lucas (1988), a força de trabalho presente na economia se divide em duas: a voltada para a produção corrente e o capital humano. Com os dois se diferenciando apenas pelo nível de acesso a educação, treinamento e outros benefícios. Podendo o capital humano ser entendido como a força de trabalho com a educação, treinamento e outros benefícios inclusos em sua trajetória laboral.  Com tal divisão resultando em variado nível de exposição a taxa de desemprego e renda dependendo do grau de instrução do trabalhador. Sendo que, um trabalhador que apresenta menor escolaridade é sujeito a uma maior taxa de desemprego e menor renda, enquanto que, o contrário ocorre com trabalhadores mais qualificados. No entanto, o investimento em educação e capacitação não é o único determinante da proporção de trabalhares pouco capacitados ou muito qualificados na economia, nessa mensuração também entra uma variável subjetiva: a decisão (alocação) do trabalhador quanto a proporção de tempo que deseja destinar ao lazer, a produção corrente ou ao acúmulo de capital humano (KRASNIQI; TOPXHIU, 2016; LUCAS, 1988).</p>
+
+<p class="normal">
+No modelo de crescimento endógeno de Romer (1989), a tecnologia é vista como endógena. Sendo ela incrementada ou inovada, não automaticamente, mas como resultado de investimentos em pesquisa e desenvolvimento (P&D) realizadas por pesquisadores (trabalhadores com elevado grau de instrução) motivados pela obtenção futura de lucros com as invenções que promovem progresso técnico. Tais invenções assumem um caráter de bem público na economia, devido a possibilidade de serem utilizadas por diversos agentes de forma simultânea e, também, apresentam a capacidade de serem replicadas. Dessa forma, o investimento em P&D e, também, no acúmulo de capital humano promove, via externalidades, o crescimento econômico. Visto que, o aumento no volume de capital humano e o progresso técnico contribuem para com o aumento da produtividade dos demais agentes na economia via efeito transbordamento (spillover).</p>
+
+<p class="normal">
+Schultz (1961) engloba as duas ideias anteriormente apresentadas ao destacar a necessidade de melhoria da qualidade de vida da população e defender o progresso do conhecimento como fonte de riqueza. Afirmando que, o fornecimento de educação – capital educacional, considerado um investimento de baixo custo –, treinamento e outros benefícios, melhorariam a qualidade de vida da população – visto a perspectiva de renda mais elevada para ocupações que exigem maior grau de qualificação – e elevaria o nível de produção, contribuindo, consequentemente, com o avanço da tecnologia. Isso porque, conforme o autor, a educação torna as pessoas mais produtivas, e, portanto, juntamente com uma boa saúde, mais capazes de contribuir com o avanço dos segmentos fortemente relacionados ao capital humano, como o de Pesquisa e Desenvolvimento (P&D) (KRASNIQI; TOPXHIU, 2016; SCHULTZ, 1961).</p>
+
+<p class="normal">
+Heckman, em sua contribuição a respeito do capital humano, defende que a formação e desenvolvimento das habilidades de um agente deve ter início na primeira infância por meio de um processo dinâmico de aprendizagem. Sendo esse processo dinâmico dividido em duas fontes de treinamento: as institucionais e as não institucionais. Com as institucionais resumidas no processo de formação formal de um indivíduo e as não institucionais, como a formação proporcionada pelas famílias e empresas. Sendo, desenvolvido, pela família, os estudos informais referentes a aprendizagem de leitura, matemática e linguagem, além do desenvolvimento emocional e social. E, em conjunto com as empresas, a aprendizagem não informal promove o fortalecimento e desenvolvimento de diferentes habilidades fundamentais para a atuação na economia moderna (HECMAN; CARNEIRO, 2003; KRASNIQI; TOPXHIU, 2016).</p>
+
+<p class="normal">
+Para Heckman, as habilidades podem ser divididas em cognitivas e não cognitivas. Sendo as cognitivas desenvolvidas através de instruções básicas e as não cognitivas, desenvolvidas em ambientes não institucionais, importantes para formação da inteligência emocional –- que proporciona que os indivíduos se tornem mais capazes, sociáveis, persistentes e com objetivos claros --. Desse modo, o desenvolvimento precoce dessas duas habilidades, promove que ocorra um aumento significativo na possibilidade de sucesso futuro, aprendizagem posterior contínua – manutenção de uma elevada produtividade e eficiência – e sucesso precoce (HECMAN; CARNEIRO, 2003; KRASNIQI; TOPXHIU, 2016).</p>
+
+<p class="normal">
+Becker (1962) defende o investimento em capital humano –- educação, saúde e treinamento no local de trabalho –- como forma de elevação de lucros das empresas. Para ele, existem algumas formas de investir no capital humano, sendo elas realizadas pelas instituições formais de ensino, como, também, por treinamentos disponibilizados internamente nas empresas (BECKER, 1962; KRASNIQI; TOPXHIU, 2016).</p>
+
+<p class="normal">
+A motivação das empresas em fazer tal investimento reside no fato de que pessoas mais qualificadas e com ensino superior, apesar de demandarem um maior salário, são mais produtivas e eficientes. Desse modo, estabelecendo uma gerência eficaz, que investe em treinamento e capacitação de seus colaborados e os incentiva a investirem em si mesmos, as empresas criam ambientes de aprendizagem que promove os incrementos na produtividade individual de cada trabalhador (BECKER, 1962; KRASNIQI; TOPXHIU, 2016).</p>
+
+<p class="normal">
+Os treinamentos disponibilizados no local de trabalho -– diferentes dos ofertados na educação formal, devido ao foco no aumento da produtividade por meio da aprendizagem de novas habilidades na prática –- podem ser divididos em dois: treinamento geral e treinamento específico. O treinamento geral consiste em um processo de aprendizagem de conhecimentos que podem ser aproveitados na atuação em diversas empresas. O treinamento específico, por outro lado, se resume em um processo de aprendizagem de conhecimentos específicos necessários a atuação em uma empresa, unicamente. Não podendo ser replicados nas concorrentes. Os conhecimentos obtidos nesse treinamento específico possibilitam que os trabalhadores recebam uma remuneração mais elevada, em comparação aos cargos que demandam apenas conhecimentos de treinamento geral. No entanto, justamente por serem conhecimentos passíveis de ser replicado apenas na empresa em questão, os trabalhadores são desestimulados em se desligar e mudar de emprego (BECKER, 1962; KRASNIQI; TOPXHIU, 2016).</p>
+
+<p class="normal">
+As empresas também podem investir em capital humano, além da oferta de treinamento, também por meio de investimento na saúde física e emocional dos trabalhadores, com vistas a aumentar o bem-estar de cada um e, consequentemente, o desempenho e produtividade (BECKER, 1962; KRASNIQI; TOPXHIU, 2016).</p>
+
+<p class="normal">
+A educação formal, clássica forma de investimento em capital humano, diferente das empresas -- que oferecem treinamentos geral e específico voltados para a produção --, é especializada no fornecimento de formação voltada para uma habilidade específica ou para um conhecimento mais amplo e diversificado (BECKER, 1962; KRASNIQI; TOPXHIU, 2016).</p>
+<br/>
+
+<p class="section">2.3 Educação e Desenvolvimento</p>
+
+<p class="normal">
+Ao aplicar a analise de dados proposta por \citeonline{bibliometrix} nos dados obtidos no Scopus sobre "Educação e Desenvolvimento Econômico", é obtida a relação dos artigos mais citados no assunto --- e suas respectivas clusterizações --- da forma tal qual é exibida na figura abaixo.</p>
+
+<p class="tabela">Figura 2 - <i>Network</i> de co-citação referente ao tema "Educação e Desenvolvimento".</p>
+<center>
+<img src="https://64.media.tumblr.com/44e966ab3cbfc0bda9c5eb18c3e30bee/a10f968e1fc3a9aa-25/s1280x1920/051a7d08a475eb82aacaac34d7c93fb19e30bb87.png" width="80%">
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados retirados do Scopus no dia 24/11/2020.</p>
+
+<p class="normal">
+Duflo (2001) --- artigo em destaque na <i>network</i> acima --- analisa o desempenho do programa de construção de escolas primárias aplicado na Indonésia entre 1973-1974 (INPRES). Este programa visava aumentar a equidade educacional entre regiões através do investimento na educação básica. Ao todo, foram construídas 61 mil escolas para atender crianças entre 5 à 14 anos de idade. Entretanto, como observa o autor, o investimento apresentou rendimentos decrescentes de escala em relação aos salários e o total de anos de estudo. Nas regiões que obtiveram o maior número de escolas, houve um aumento salarial que variou entre 3 à 5.4%; equiparando-se às regiões com maior grau de desenvolvimento educacional. Por outro lado, o autor aponta que os investimentos em educação só podem ser sentidos ao longo prazo e, no caso do programa, os aumentos salariais passaram a ser observados junto com o aumento do PIB apenas a partir do ano de 1995. Outra observação foi a de que o programa foi responsável por aumentar a <i>quantidade</i> da educação oferecida no país, sendo refletida por um aumento nos anos totais de estudos e na quantidade da parcela da população beneficiada pelo programa. Por outro lado, o programa não foi eficiente em aumentar a <i>qualidade</i> da educação no país de forma a corresponder o incremento no número de escolas; desta forma, o aumento salarial apresentou crescimento decrescente pois a qualidade da mão-de-obra não evoluiu de forma a acompanhar o aumento dos anos de estudo.</p>
+
+<p class="normal">
+Não há consenso na literatura sobre como definir o nível de qualidade docente. As hipóteses variam entre a proficiência dos alunos em determinadas competências, nível de educação e qualificação do professor, produtividade docente e até, em alguns casos, carisma e aparência (HARRIS; SASS, 2011). Somada com a dificuldade de definir "o que é a qualidade" de um professor, temos a tendência dos países subdesenvolvidos em priorizar a quantidade ao invés da qualidade em termos educacionais (DUFLO, 2001; HANUSHEK, 1995). Pesquisas mostram que a escolaridade do professor, o salário e o investimento massivo em infraestrutura educacional não são suficientes para explicar o desempenho do discente (DUFLO, 2001; HANUSHEK, 1995, HARRIS; SASS, 2011). Desta forma, existe uma clara dificuldade para as Instituições buscarem evoluir o desempenho estudantil mesmo em países desenvolvidos e no atual estado da arte teórica sobre educação. </p>
+<br/>
+
+<p class="section">2.4 Indicadores de Desenvolvimento</p>
+
+<p class="normal">
+O uso de indicadores de desenvolvimento surge em meio aos estudos relacionados ao desenvolvimento, que na década de 1950, era um sinônimo de crescimento econômico, sendo assim medido através do Produto Interno Bruto de um país. Entretanto, com a evolução dos estudos sobre desenvolvimento, e sua consequente separação do conceito de crescimento econômico, levou a criticas relacionadas ao uso do PIB, já que crescimento econômico não necessariamente implica em desenvolvimento econômico. Deste modo, em 1990, o PNUD (Programa das Nações Unidas para o Desenvolvimento) apresenta em um relatório anual o IDH (Índice de Desenvolvimento Humano) que leva, além de dados econômicos, a consideração acerca de aspectos sociais relevantes ao desenvolvimento (SIDENBERG, 2011).</p>
+
+<p class="normal">
+Segundo Siedenberg (2011), na década de 1960 surgem críticas ao uso do PIB como um indicador de desenvolvimento, já que as politicas de desenvolvimento baseadas no PIB não levavam necessariamente a um desenvolvimento econômico e social, apenas econômico. Dentre os motivos enumerados por Siedenberg (2011) como questionamento do PIB como indicador de desenvolvimento, estão: a renda per capita calculada não reflete a verdadeira situação do poder de compra (<i>purchasing power parities</i>) de um país; e a renda <i>per capita</i> média que esconde as diferenças sociais entre regiões, já que a renda pode estar concentrada em um número pequeno de pessoas dentro de uma sociedade, levando a uma falsa percepção de qualidade de vida.</p>
+
+<p class="normal">
+Assim, Siedenberg (2011) aponta que indicadores são apenas unidades de medidas parciais e substitutivas, sendo necessária sua inserção em um contexto teórico-metodológico que lhe de um significado, de modo que represente um aspecto relevante para o desenvolvimento. Assim, a tabela abaixo mostra as características dos indicadores de desenvolvimento, segundo Siedenberg (2011):</p>
+
+<p class="tabela">Tabela 2 – Indicadores de desenvolvimento e suas características.</p>
+
+<table class="modificada2">
+<tr style="border-top: 3px solid black;">
+<td rowspan=7 style="border-bottom: 2px solid black;"><b>Requisitos Básicos</b></td><td style="border-bottom: 1px dashed grey;">Simples</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Dinâmico</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Sensível</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Holístico</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Confiável</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Participativo</td>
+</tr><tr style="border-bottom: 2px solid black;">
+<td>Capaz de combinar aspectos gerais com específicos</td>
+</tr><tr>
+<td rowspan=3 style="border-bottom: 2px solid black;"><b>Principais tipos</b></td><td style="border-bottom: 1px dashed grey;">Indicadores <i>per capita</i></td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Indicadores percentuais</td>
+</tr><tr style="border-bottom: 2px solid black;">
+<td>Indicadores estruturais</td>
+</tr><tr>
+<td rowspan=3 style="border-bottom: 2px solid black;"><b>Principais funções</b></td><td style="border-bottom: 1px dashed grey;">Diagnosticar as condições de desenvolvimento social ou setorial</td style="border-bottom: 1px dashed grey;">
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Propiciar informações sobre os problemas sociais ou crises potenciais</td>
+</tr><tr style="border-bottom: 2px solid black;">
+<td>Avaliar metas e estratégias globais/setoriais</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td rowspan=7 style="border-bottom: 2px solid black;"><b>Escolha e valorização</b></td><td>Disponibilidade de dados</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Possibilidade de comparação intertemporal e supra-regional</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Consistência, universalidade e confiabilidade dos dados</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Validade dos dados</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Significância conceitual</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Capacidade de diferenciação</td>
+</tr><tr style="border-bottom: 2px solid black;">
+<td>Equilíbrio ou tentativa de evitar sobreposições temáticas dentro de um grupo de indicadores</td>
+</tr><tr>
+<td rowspan=6 style="border-bottom: 3px solid black;"><b>Indicadores Sociais</b></td><td style="border-bottom: 1px dashed grey;">Indicadores de nutrição</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Indicadores de saúde</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Indicadores ambientais</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Indicadores habitacionais</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Indicadores educacionais</td>
+</tr><tr style="border-bottom: 3px solid black;">
+<td>Índice de Desenvolvimento Humano (IDH)</td>
+</tr></table>
+
+<p class="ref">Fonte: Desenvolvimento próprio com base no artigo de Siedenberg (2011).</p>
+<br/>
+
+<p class="section">3\. METODOLOGIA</p>
+
+<p class="normal">
+A metodologia utilizada neste trabalho foi a análise exploratória dos dados considerados dentro do Índice Firjan de Desenvolvimento Municipal (IFDM) para entender o comportamento individual das variáveis em cada um dos 141 municípios do Estado de Mato Grosso (MT). Os dados foram obtidos de acordo com as recomendações presentes dentro da metodologia utilizada na construção do indicador (FIRJAN, 2016), onde as fontes correspondem ao Cadastro Geral de Emprego e Desemprego (CAGED); Relação Anual de Informações Sociais (RAIS); Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira (INEP) e o Instituto Brasileiro de Geografia e Estatística (IBGE). Os dados foram trabalhados dentro do \textit{software} estatístico R e a apresentação dos dados de forma interativa.</p>
+<br/>
+
+<p class="section">4\. RESULTADOS E DISCUSSÃO</p>
+
+<p class="normal">
+Esta seção, será dedicada a apresentação dos resultados obtidos ao realizar a análise dos dados referentes ao Índice Firjan de Desenvolvimento Municipal. Inicialmente, será abordado o valor do índice para cada um dos 141 municípios de Mato Grosso, buscando obter as cidades com o melhor desempenho em conjunto dos quatro índices --- Geral, saúde, emprego/renda e educação ---. Posteriormente, será analisado os dados referentes ao índice educacional dos dez municípios considerados mais desenvolvidos; assim como seus reais desempenhos.</p>
+<br/>
+
+<p class="section">4.1 Indíce Firjan de Desenvolvimento Municipal</p>
+
+<p class="normal">
+O Índice Firjan de Desenvolvimento municipal (IFDM) analisado, estima o desenvolvimento socioeconômico de cada município utilizando as variáveis emprego e renda, educação e saúde, para que, por meio de sua análise, verificar se há melhoria ocorrida na qualidade de vida da população em tal cidade, quando ocorre, é resultado de: I) implementação de políticas públicas voltadas para o desenvolvimento das três áreas de referência; ou II) reflexo da redução da qualidade de vida dos municípios ao entorno (FIRJAN, 2018; 2016).</p>
+
+<p class="normal">
+De acordo com Medeiros (2018) a metodologia utilizada pelo Índice de Firjan baseou os seus três índices conforme a seguinte estrutura: IFDM emprego e renda; onde a variável emprego, fica responsável por avaliar a geração de emprego formal e como o mercado de trabalho está absorvendo a mão de obra local; e com a variável renda, demonstrando a sua formação e distribuição local. Para o IFDM educação, o autor explica que o seu principal objetivo é o de obter a quantidade de educação ofertado pelo município e a qualidade da educação que está sendo entregue pelas redes públicas e privadas de ensino. E por último, o IFDM saúde focando totalmente na saúde básica ofertada pelo município. </p>
+
+<p class="normal">
+Para verificar o nível de desenvolvimento humano em cada município, o índice de Firjan fragmenta o seu valor, que pode variar dentro do intervalo de 0 a 1, em quatro categorias: I) IFDM entre 0,0 e 0,4; II) IFDM entre 0,4 e 0,6; III) IFDM entre 0,6 e 0,8; e IV) IFDM entre 0,8 e 1,0. Com os municípios dentro da categoria I considerados pouco (baixo) desenvolvidos; com os da categoria II apresentando um nível de desenvolvimento regular; da categoria III, sendo considerados moderadamente desenvolvidos; e os da categoria IV) apresentando um desenvolvimento pleno (alto) (FIRJAN, 2016).</p>
+
+<p class="normal">
+Na Figura 3 são apresentados os IFDM de cada município de Mato Grosso - multiplicado por 100 (IFDM $\times$ 100) --- referentes ao ano de 2018, tendo como ano base 2016.</p>
+
+<p class="tabela">Figura 3 - IFDM dos 141 municípios de Mato Grosso no ano de 2016.</p>
+
+<center>
+```{r, echo=FALSE}
+municipios2 %>%
+  leaflet() %>%
+  addProviderTiles(provider = providers$OpenTopoMap) %>%
+  addCircleMarkers(lat = municipios2$lat, lng = municipios2$lng, color = ~pal2(ifdm*100)) %>%
+  addLegend("bottomright", pal = pal2, values = ~ifdm*100)
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pela Firjan.</p>
+
+<p class="normal">
+Dos 141 municípios de Mato Grosso, 9 são considerados em pleno estado de desenvolvimento, 116 são considerados moderadamente desenvolvidos, 16 são considerados em estado de desenvolvimento regular. Nenhum dos municípios apresentou estado de baixo desenvolvimento no período analisado. Consequentemente, por tal perspectiva, o Estado de Mato Grosso apresenta um bom desempenho quando relacionado ao desenvolvimento municipal. Por ser um indicador amplo, temos que, consequentemente, as variáveis econômicas e educacionais também apresentam, teoricamente, um bom desempenho nos municípios analisados. A Figura 4 ilustra o desempenho dos municípios quando relacionado aos três indicadores.</p>
+
+<p class="tabela">Figura 4 - Relação entre IFDM, IFDM (Educação) e IFDM (Emprego/Renda).</p>
+
+<center>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="90%"}
+municipios2 %>%
+  plot_ly(z = ~ifdm, x = ~emp_rend, y = ~edu, color = ~mun, hoverinfo = "text", text = ~paste("Município:", mun, "<br>", "IFDM:", ifdm, "<br>", "IF - Educação:", edu, "<br>", "IF - Emprego e Renda:", emp_rend), showlegend = F) %>%
+  add_markers(alpha = 0.8, colors = "inferno") %>%
+  layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "IF - Emprego e Renda"),
+         yaxis = list(showgrid = FALSE, title = "IF - Educação"),
+         zaxis = list(showgrid = F, title = "IFDM")) 
+
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pela Firjan.</p>
+
+<p class="normal">
+Como esperado, é observada uma concentração dos municípios dentro dos valores próximo ao amplo desenvolvimento, representando que os municípios mato-grossenses apresentam um bom desempenho em ambos aspectos quando observados pela ótica do indicador. Ao ranquear os dados, observa-se que Lucas do Rio Verde foi o município com melhor desempenho do Estado, superando a capital que aparece logo em seguida. A Tabela 3 apresenta os dez principais municípios em questões de desenvolvimento social e econômico pela ótica da Firjan.</p>
+
+<p class="tabela">Tabela 3 - IFDM dos municípios mato-grossenses, 2016.</p>
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="90%"}
+
+datatable(firjan, colnames = c("Município", "IFDM", "IFDM (Emprego e renda)", "IFDM (Educação)"))
+
+```
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pela Firjan.</p>
+
+<p class="normal">
+Logo de início, percebemos na Tabela 3 que os resultados para o IFDM (Educação) nos dez municípios, mesmo sendo elevados e considerados em alto estágio de desenvolvimento, não refletem em elevados resultados para o IFDM (Emprego e Renda), considerados em desenvolvimento moderado. Tendo em vista que o IFDM (Emprego e Renda) inclui fatores relacionados ao mercado de trabalho formal, onde encontram-se boa parte dos trabalhadores qualificados, com considerável nível educacional, pode-se dizer que existe um contraste entre a realidade e a teoria de Lucas (1988), que demonstra uma relação positiva entre renda e qualificação.</p>
+<br/>
+
+<p class="section">4.2 Educação nos dez municípios mais desenvolvidos</p>
+
+<p class="normal">
+A educação, como dito anteriormente, é uma das três áreas componentes do Índice Firjan de Desenvolvimento Municipal. O acompanhamento dessa área é realizada com o propósito de constatar se o desempenho educacional de cada município se aproxima ou distância das metas do Plano Nacional de Educação (PNE), do Ministério da Educação (MEC). Para realizar tal acompanhamento, a educação é analisada através da coleta de dados, disponibilizados pelo MEC, de seis indicadores do ensino fundamental: I) atenção voltada à educação infantil; II) evasão; III) não correspondência entre idade e série; IV) docentes com ensino superior; V) média de horas das aulas diárias; e VI) resultado do Índice de Desenvolvimento da Educação Básica (IDEB) (FIRJAN, 2018).</p>
+
+<p class="normal">
+Vale destacar que o IFDM (Educação) inclui apenas um indicador que sinaliza o desempenho dos alunos, que é o IDEB, os demais indicadores não são suficientes para inferir se os alunos tiveram ou não um processo educacional de boa qualidade. Pois, assim como foi dito por Duflo (2001), a qualidade do ensino não depende tanto da quantidade de anos/horas de estudo e da escolaridade do professor. Existem fatores que interferem no desenvolvimento dos alunos que vão muito além da sala de aula. Pode-se apontar alguns como os fatores não institucionais, mencionados por Heckman (2003), e uma variável subjetiva, mencionada por Lucas (1988), ambos autores citados anteriormente na revisão bibliográfica.</p>
+
+<p class="normal">
+Para constatar se os IFDM educacionais, anteriormente apresentados na Tabela 3, condizem com a realidade dos municípios em questão, são analisados a taxa de abandono de discentes de institutos/escolas/colégios federais, estaduais, municipais e privadas. Na figura abaixo, é ilustrado o desempenho das escolas na Prova Brasil realizada no ano de 2011, onde são relacionadas a média obtida pela escola em cada um dos campos exigidos no exame --- Língua Portuguesa e Matemática ---; sendo o valor máximo para cada um dos campos estando em 500 pontos.</p>
+
+<p class="tabela">Figura 5 - Prova Brasil, 2011.</p>
+
+<center>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="90%"}
+oco <- educacao_prova_brasil_mun %>%
+  filter(SIGLA_UF == "MT", NOME_MUNICIPIO %in% c("LUCAS DO RIO VERDE", "CUIABA", "DIAMANTINO", "SORRISO", "CAMPO NOVO DO PARECIS", "SINOP", "CAMPO VERDE", "NOVA MUTUM", "RONDONOPOLIS", "PRIMAVERA DO LESTE")) %>%
+  plot_ly(size = ~NU_PRESENTES, showlegend = T, colors = "inferno", hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_LP, "<br>", "Média (Matemática):", MEDIA_MT, "<br>", "Município:", NOME_MUNICIPIO, "<br>", "Presentes na prova:", NU_PRESENTES)) %>%
+  add_markers(x = ~MEDIA_MT, y = ~MEDIA_LP, alpha = 0.6, color = ~NOME_MUNICIPIO) %>%
+  layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
+         yaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
+         legend = list(orientation = "h",   # show entries horizontally
+                     xanchor = "center",  # use center of legend as anchor
+                     x = 0.5, y = -0.2)) 
+oco
+
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+
+<p class="normal">
+O desempenho de grande parte das escolas, em ambas competências, foi inferior à 50% do total de pontos permitidos; mostrando que o aproveitamento das escolas não é bom o bastante mesmo sendo classificados com um alto IFDM.</p>
+
+<p class="normal">
+Quanto ao desempenho no Exame Nacional do Ensino Médio (ENEM) relacionado com a taxa de aprovação da escola (proporção de alunos que não abandonaram os estudos), temos a presença de dois grupos distintos, onde o primeiro apresenta considerável taxa de abandono --- e baixo desempenho no exame --- e o segundo apresenta baixa taxa de abandono --- e desempenho regular no exame ---, sendo o segundo grupo estando impulsionado pelas escolas privadas. O ENEM abrange cinco competências, sendo elas (I) Linguagens; (II) Ciências Humanas; (III) Ciências Naturais; (IV) Matemática e (V) Redação; onde cada uma das competências tem um valor total de mil pontos. A nota final é a média simples do somatório das notas obtidas em ambas competências. No caso dos dados analisados, a maior média observada foi de 640 pontos, e a menor de 447 pontos. A figura abaixo ilustra o desempenho das escolas participantes do ENEM (públicas e privadas) no ano de 2015.</p>
+
+<p class="tabela">Figura 6 - Desempenho no ENEM por escola em relação à quantidade de alunos aprovados (públicas e privadas), 2005-2015.</p>
+
+<center>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
+teste1 <- enem_escola %>%
+  filter(SG_UF_ESCOLA == "MT", NU_ANO == 2008) %>%
+  mutate(NU_MEDIA_TOT = ((NU_MEDIA_RED + NU_MEDIA_OBJ)/2)*10)
+
+teste2 <- enem_escola %>%
+  filter(SG_UF_ESCOLA == "MT", NU_ANO %in% c(2009:2015)) %>%
+  mutate(NU_MEDIA_TOT = (NU_MEDIA_RED + NU_MEDIA_CN + NU_MEDIA_CH + NU_MEDIA_LP + NU_MEDIA_MT)/5)
+
+teste3 <- enem_escola %>%
+  filter(SG_UF_ESCOLA == "MT", NU_ANO %in% c(2005:2007)) %>%
+  mutate(NU_MEDIA_TOT = NU_MEDIA_TOT*10)
+
+desgraca <- teste3 %>%
+  bind_rows(teste1, teste2)
+  
+
+pinto1 <- desgraca %>%
+    filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste")) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
+     layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 700))) %>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+pinto1
+
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+
+<p class="normal">
+Ao retirar as escolas privadas da analise, percebemos uma queda na média obtida pelas escolas, o que reflete a precariedade do ensino público mesmo nas cidades referência em desenvolvimento. A maior média obtida no exame partiu dos Institutos Federais, sendo o destaque o Instituto Federal de Mato Grosso - Campus Cuiabá (IFMT) com uma média de 575 pontos. Se retirarmos os IFs, a maior média obtida foi de 521 pontos. Outra característica das instituições públicas é a alta concentração das escolas com considerável taxa de abandono. A figura abaixo ilustra o desempenho das instituições de ensino públicas no ENEM de 2015.</p>
+
+<p class="tabela">Figura 7 - Desempenho no ENEM por escola em relação à quantidade de alunos aprovados (públicas), 2005-2015.</p>
+
+<center>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
+
+pinto3 <- desgraca %>%
+    filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA != 4) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
+    layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(250, 600)))%>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+pinto3
+
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+
+<p class="normal">
+Em relação à qualificação profissional do docente para lecionar e o desempenho das escolas no ENEM, temos um grupo de escolas com baixo desempenho no exame junto a um baixo indicador de qualificação profissional; um grupo de escolas com desempenho regular no exame e considerável qualificação profissional e, por fim, um grupo de escolas com alto desempenho profissional e regular desempenho no exame. O destaque da qualificação profissional foi para os Institutos Federais; entretanto, a qualificação profissional dos docentes não refletiu em um alto desempenho dos alunos que realizaram o exame. A figura abaixo ilustra os resultados obtidos nesta análise.</p>
+
+<p class="tabela">Figura 8 - Desempenho no ENEM por escola em relação à qualificação docente (públicas e privadas), 2013-2015.</p>
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
+pinto5 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste")) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>","Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
+    layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio.", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 700))) %>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+
+pinto5
+
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+
+<p class="normal">
+Ao remover as escolas particulares da análise, percebemos o isolamento dos IFs no aspecto da qualificação profissional dos docentes. Logo, as instituições de ensino públicas apresentam uma concentração no baixo nível de qualificação profissional docente junto a um baixo desempenho no ENEM. A figura abaixo apresenta a relação da qualificação profissional e o desempenho dos estudantes no ENEM aplicado em 2015.
+</p>
+
+<p class="tabela">Figura 9 - Desempenho no ENEM por escola em relação à qualificação docente (públicas), 2013-2015.</p>
+
+<center>
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
+
+pinto7 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA != 4) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "inferno", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
+    layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio.", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(300, 600))) %>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+
+pinto7
+
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+
+
+<p class="normal">
+Mudando a analise para a taxa de abandono, percebemos que o maior índice de abandono está presente nas escolas estaduais.</p>
+
+<p class="tabela">Figura 10 - Taxa de abandono.</p>
+
+<center>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
+subplot1 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA == 1) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "inferno") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA) %>%
+  layout(annotations = list(text = "Federais", x = 1.5, y = 2, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot2 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA == 2) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = T, colors = "inferno") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA) %>%
+  layout(annotations = list(text = "Estaduais", x = 4.5, y = 70, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE)) 
+
+subplot3 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA == 3) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "inferno") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA)%>%
+  layout(annotations = list(text = "Municipais", x = 0, y = 1, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot4 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste"), TP_DEPENDENCIA_ADM_ESCOLA == 4, NU_TAXA_ABANDONO < 30) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "inferno") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA)%>%
+  layout(annotations = list(text = "Privadas", x = 4.5, y = 50, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot(subplot1, subplot2, subplot3, subplot4, nrows = 2, shareX = T)
+
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+<br/>
+
+<p class="section">4.3 Comparando a educação entre os extremos</p>
+
+<p class="normal">
+A sessão anterior demonstrou que os resultados do desempenho educacional dos dez melhores municípios classificados pelo IFDM não foram positivos. Entretanto, dever-se-á comparar o resultado entre os extremos do indicador para observar, na teoria, uma discrepância no desempenho entre os municípios. Nesta sessão, compararemos os valores obtidos pelos dez melhores classificados pelo IFDM e os dez municípios com as dez piores classificações.</p>
+
+<p class="normal">
+Ao analisar os resultados das escolas que participaram da Prova Brasil no ano de 2011, percebemos que o desempenho foi semelhante; neste caso, a diferença entre os municípios com melhor classificação foi a quantidade de escolas que participaram do exame. A figura abaixo ilustra a comparação do desempenho entre os vinte municípios selecionados.</p>
+
+<p class="tabela">Figura 11 - Comparação Prova Brasil, 2011.</p>
+
+<center>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
+oco2 <- educacao_prova_brasil_mun %>%
+  filter(SIGLA_UF == "MT", NOME_MUNICIPIO %in% c("GENERAL CARNEIRO", "CAMPINAPOLIS", "NOVA NAZARE", "VILA RICA", "GAUCHA DO NORTE", "DENISE", "PONTE BRANCA", "SAO FELIX DO ARAGUAIA", "SANTA TEREZINHA", "ALTO BOA VISTA")) %>%
+  plot_ly(size = ~NU_PRESENTES, showlegend = T, colors = "viridis", hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_LP, "<br>", "Média (Matemática):", MEDIA_MT, "<br>", "Município:", NOME_MUNICIPIO, "<br>", "Presentes na prova:", NU_PRESENTES)) %>%
+  add_markers(x = ~MEDIA_MT, y = ~MEDIA_LP, alpha = 0.6, color = ~NOME_MUNICIPIO) %>%
+  layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
+         yaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
+         legend = list(orientation = 'h')) 
+
+subplot(oco, oco2, nrows = 1)
+
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+
+<p class="normal">
+Quanto ao ENEM, temos novamente uma concentração das poucas escolas presentes dentro da base de dados (municípios com a menor classificação) com baixo desempenho no exame e considerável taxa de abandono. Neste caso, o baixo número de escolas (tanto públicas quanto privadas) mostrou que a diferença primordial está na quantidade de escolas, mas não necessariamente na qualidade do ensino aplicado nessas instituições. A maior média observada, nos municípios com menos IFDM, foi de 519 pontos, sendo a escola em questão classificada como particular. A figura abaixo ilustra a comparação entre os municípios no ENEM aplicado entre 2005 e 2015.</p>
+
+<p class="tabela">Figura 12 - Comparação do desempenho no ENEM por escola em relação à quantidade de alunos aprovados (públicas e privadas), 2005-2015.</p>
+
+<center>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
+pinto2 <- desgraca %>%
+    filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista")) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "viridis", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
+    layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 700)))
+
+subplot(pinto1, pinto2, nrows = 2)
+
+```
+
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+
+<p class="normal">
+Ao remover as instituições de ensino privadas, é perceptível a proximidade entre as médias obtidas no ENEM. Em uma comparação de valores direta, a melhor média obtida pelos dez melhores classificados no IFDM foi de 575 contra 475 dos municípios com a pior classificação; entretanto, esta comparação se dá entre o IFMT-Cuiabá e uma Escola Estadual. Ao remover os IFs da analise, a comparação passa a ser 521 contra os mesmos 475, no ano de 2015. A figura abaixo ilustra a comparação do desempenho.</p>
+
+<p class="tabela">Figura 13 - Comparação do desempenho no ENEM por escola em relação à quantidade de alunos aprovados (públicas), 2005-2015.</p>
+
+<center>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
+pinto4 <- desgraca %>%
+    filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA != 4) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "viridis", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Taxa de aprovação da escola:", NU_TAXA_APROVACAO, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~NU_TAXA_APROVACAO, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
+    layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Taxa de aprovação da escola", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 730)))
+
+subplot(pinto3, pinto4, nrows = 2)
+
+```
+
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+
+<p class="normal">
+Quanto a qualificação docente, temos que das poucas escolas presentes, todas apresentam uma baixa qualificação profissional tanto nas instituições públicas quanto nas instituições privadas.</p>
+
+<p class="tabela">Figura 14 - Comparação do desempenho no ENEM por escola em relação à qualificação docente (públicas e privadas), 2013-2015.</p>
+
+<center>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
+pinto6 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista")) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "viridis", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>","Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','triangle', 'square')) %>%
+    layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio.", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 700))) 
+
+subplot(pinto5, pinto6, nrows = 2)
+
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+
+<p class="normal">
+Ao remover as instituições de ensino privada, é perceptível a redução na qualificação docente nos municípios com pior IFDM mesmo com o desempenho no ENEM tendo valores aproximados aos municípios de alto IFDM.</p>
+
+<p class="tabela">Figura 15 - Comparação do desempenho no ENEM por escola em relação à qualificação docente (públicas), 2013-2015.</p>
+
+<center>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
+pinto8 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA != 4) %>%
+  plot_ly(size = ~NU_PARTICIPANTES, colors = "viridis", showlegend = F, hoverinfo = "text", text = ~paste("Município:", NO_MUNICIPIO_ESCOLA, "<br>", "Escola:", NO_ESCOLA_EDUCACENSO, "<br>", "Média no Enem:", NU_MEDIA_TOT, "<br>", "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio:", PC_FORMACAO_DOCENTE, "<br>", "Porte da escola:", PORTE_ESCOLA, "<br>", "Tipo:", TP_DEPENDENCIA_ADM_ESCOLA, "<br>", "Taxa de abandono:", NU_TAXA_ABANDONO)) %>%
+  add_markers(x = ~PC_FORMACAO_DOCENTE, y = ~NU_MEDIA_TOT, color = ~NO_MUNICIPIO_ESCOLA, alpha = 0.6, frame = ~NU_ANO, symbol = ~TP_DEPENDENCIA_ADM_ESCOLA, symbols = c('circle','x','o', 'square')) %>%
+    layout(title = '',
+         xaxis = list(showgrid = FALSE, title = "Indicador de Adequação da Formação Docente da escola para lecionar no Ensino Médio.", range = c(0, 100)),
+         yaxis = list(showgrid = FALSE, title = "Média ENEM", range = c(0, 100))) 
+subplot(pinto7, pinto8, nrows = 2)
+
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+
+<p class="normal">
+Por fim, a taxa de abandono apresentou um comportamento próximo --- principalmente nas escolas estaduais --- quando comparadas com os grandes centros.</p>
+
+<p class="tabela">Figura 16 - Comparação da taxa de abandono.</p>
+
+<center>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
+subplot5 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA == 1) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "viridis") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA) %>%
+  layout(annotations = list(text = "Federais", x = 1.5, y = 2, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot6 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA == 2) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = T, colors = "viridis") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA) %>%
+  layout(annotations = list(text = "Estaduais", x = 4.5, y = 70, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE)) 
+
+subplot7 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA == 3) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "viridis") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA)%>%
+  layout(annotations = list(text = "Municipais", x = 1.5, y = 1, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot8 <- desgraca %>%
+  filter(NO_MUNICIPIO_ESCOLA %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista"), TP_DEPENDENCIA_ADM_ESCOLA == 4, NU_TAXA_ABANDONO < 30) %>%
+  plot_ly(color = ~NO_MUNICIPIO_ESCOLA, showlegend = F, colors = "viridis") %>%
+  add_boxplot(y = ~NU_TAXA_ABANDONO, legendgroup = ~NO_MUNICIPIO_ESCOLA)%>%
+  layout(annotations = list(text = "Privadas", x = 0.5, y = 50, showarrow = F), yaxis = list(showgrid = F), xaxis= list(showticklabels = FALSE))
+
+subplot(subplot1, subplot2, subplot3, subplot4, subplot6, subplot8, nrows = 3, shareX = F)
+
+```
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
+<br/>
+
+<p class="section">5\. CONSIDERAÇÕES FINAIS</p>
+
+<p class="normal">
+Na tentativa de demonstrar que indicadores de desenvolvimento podem, muitas vezes, não refletir a realidade das sociedades analisadas, buscou-se no presente trabalho verificar se os valores estimados do Índice Firjan de Desenvolvimento Municipal (IFDM) educacional refletem o real desempenho da educação -- e seus agentes -- nos municípios do Estado de Mato Grosso (MT). Com esta finalidade, foi realizada uma análise exploratória dos dados considerados dentro do IFDM, com especial foco no Índice educacional, para entender o comportamento individual das variáveis em cada um dos 141 municípios de Mato Grosso.</p>
+
+<p class="normal">
+Analisando, brevemente, os IFDM de Mato Grosso, verificou-se que, considerando as quatro categorias do IFDM, mais de 88% dos municípios de MT são considerados, ao menos, moderadamente desenvolvidos nas três variáveis analisadas no IFDM. Levando em consideração os apontamento de North (1959), esses resultados poderiam sugerir que -- como o IFDM centra suas estimativas nas variáveis emprego e renda, educação e saúde -- tais municípios podem ter um crescimento influenciado por alguns fatores, como: a estrutura geográfica da região, assim como fatores climáticos e de proximidade com os grandes centros; a proximidade com matrizes produtivas semelhantes, gerando uma cooperação mútua dentro da produção; a abundância de recursos naturais próximos que auxiliem na cadeia produtiva; a capacidade de crescimento da agricultura em conjunto ao crescimento industrial; a organização inicial da região; as características da população local, como a aceitação dos produtos e o tipo de consumo dos agentes; a forma como a renda gerada na região é distribuída; entre outros.</p>
+
+
+<p class="normal">
+Sobre o aspecto educacional, analisando os resultados obtidos na Prova Brasil (2011) e ENEM (2015), foi verificado que o desempenho de grande parte das escolas, nas duas competências avaliadas pela Prova Brasil, foi inferior a 50% do total de pontos permitidos e que, no ENEM, os colégios privados apresentaram um desempenho mais elevado que as escolas públicas, sendo que, dentro das públicas, o maior desempenho foram dos alunos dos Institutos Federais (IF) –- que detêm um corpo docente com uma elevada concentração de professores altamente qualificados -–.</p>
+
+<p class="normal">
+Também foi relatado que, ao comparar o desempenho dos 10 municípios com IFDM mais elevados com os municípios com as piores classificações, os desempenhos, tanto na Prova Brasil quanto no ENEM, foram semelhantes, diferindo-se apenas na quantidade de escolas participantes, sugerindo, dessa maneira, que a qualidade de ensino aplicada nas instituições dos dez municípios mais desenvolvidos não é necessariamente diferente dos dez com um nível de desenvolvimento regular.</p>
+
+<p class="normal">
+Estes resultados sugerem que, nos municípios analisados, não há um investimento público concentrado e bem planejado -- com vistas a uma educação de qualidade -- principalmente na formação da primeira infância, como defendida por Heckman (2003). Visto que, caso o investimento fosse focalizado, não desconsiderando o grau de participação familiar na formação individual na infância (tão essencial quanto a formação institucional formal), os desempenhos obtidos na Prova Brasil e ENEM seriam mais significativos, pois, quando realizada essa educação precoce de qualidade é possível que os indivíduos se tornem mais capazes, sociáveis, persistentes e com objetivos claros, além de haver um aumento significativo na possibilidade de sucesso futuro precoce.</p>
+
+<p class="normal">
+Desta forma, com tais análises exploratórias, comprovou-se a hipótese de que o IFDM elevado, em comparação com a realidade, mascara a condição educacional a que cada indivíduo dos municípios mato-grossenses são submetidos. Entretanto, análises mais profundas são necessárias para a real avaliação da situação educacional dos municípios mato grossenses, assim como as condições que levam a distorção do real nível educacional dos municípios analisados neste trabalho, visto as limitações do índice por desconsiderar variáveis essenciais na formação dos alunos e considerar, em grande parte, variáveis que não afetam tanto no resultado da qualificação dos mesmos.</p>
+<br/>
+
+<p class="section">NOTAS TÉCNICAS</p>
+
+<p class="normal">
+Os dados utilizados, scripts e afins estão disponíveis em <https://github.com/israelkelmo/Desenvolvimento>. Devida a diferença de escala, alguns gráficos podem aparecer em branco ou em escala confusa. Neste caso, recomenda-se o uso da função <i>autoscale</i> presente no canto superior direito de cada gráfico (Exceto mapas).</p>
+<br/>
+
+<p class="section">REFERÊNCIAS</p>
+
+<div class="referencia">
+ARIA, M.; CUCCURULLO, C. bibliometrix: An R-tool for comprehensive sciencemapping analysis. **Journal of Informetrics**, v. 11, n. 4, p. 959–975, 2017. Disponível em:<https://ideas.repec.org/a/eee/infome/v11y2017i4p959-975.html>.
+
+BARQUERO, A. V. Os territorios innovadores: Espaços estratégicos do desenvolvimento. **Crítica e Sociedade**, n. 2, 2014.
+
+BECKER, G. S. Investment in human capital: A theoretical analysis. **Journal of Political Economy**, v. 70, n. 5, out. 1962. Disponível em: <https://www.journals.uchicago.edu/doi/10.1086/258724>.
+
+DAVIS,  L.;  NORTH,  D. **Institutional  change  and  American  economic  growth**. Cambridge [u.a.]: Cambridge Univ. Press, 1971. ISBN 0521081114. Disponível em: <http://gso.gbv.de/DB=2.1/CMD?ACT=SRCHA&SRT=YOP&IKT=1016&TRM=ppn+027388573&sourceid=fbw_bibsonomy>.
+
+DUFLO, E. Schooling and labor market consequences of school construction in indonesia: Evidence from an unusual policy experiment. **The American Economic Review**, American Economic Association, v. 91, n. 4, p. 795–813, 2001. ISSN 00028282. Disponível em:<http://www.jstor.org/stable/2677813>.
+
+FIRJAN. **Anexo metodológico – IFDM 2018 **– ano base 2016. Federação das Indústrias do Estado do Rio de Janeiro - FIRJAN, 2016.
+
+FIRJAN. **IFDM 2018: Índice Firjan desenvolvimento municipal, ano base 2016**. Federação das Indústrias do Estado do Rio de Janeiro - FIRJAN, 2018.
+
+HANUSHEK, E. Interpreting recent research on schooling in developing countries. **WorldBank Research Observer**, v. 10, n. 2, p. 227–246, 1995. ISSN 02573032.
+
+HARRIS, D.; SASS, T. Teacher training, teacher quality and student achievement. **Journal of Public Economics**, v. 95, n. 7-8, p. 798–812, 2011. ISSN 00472727. Disponível em: <https://www.scopus.com/inward/record.uri?eid=2-s2.0-79955015642&doi=10.1016%2fj.jpubeco.2010.11.009&partnerID=40&md5=2788dbd1af2c92456b7ce4aafc896d46>.
+
+HECKMAN, J. J.; CARNEIRO, P. Human capital policy. **National Bureau of Economic Research**, 2003. Disponível em: <http://www.nber.org/papers/w9495>.
+
+KALDOR, N. A Model of Economic Growth. **The Economic Journal**, v. 67, n. 268, p.591–624, 12 1957. ISSN 0013-0133. Disponível em: <https://doi.org/10.2307/2227704>.
+
+KEYNES, J. M. **The General Theory of Employment, Interest and Money**. [S.l.]: Macmillan,1936. 14th edition, 1973.
+
+KRASNIQI, F. X.; TOPXHIU, R. M. The importance of investment in human capital: Becker, Schultz and Heckman. **Scientific Papers**, v. 6, ago. 2016. Disponível em:<http://www.scientificpapers.org/wp-content/files/1569_KrasniqiTopxhiu-The_Importance_of_Investment_in_Human_Capital.pdf>.
+
+LUCAS, R. E. On the mechanics of economic development. **Journal of Monetary Economics**, v. 22, n. 1, p. 3 – 42, 1988. ISSN 0304-3932. Disponível em:<http://www.sciencedirect.com/science/article/pii/0304393288901687>.
+
+MEDEIROS, A.; LUANA dos S.; MOURA, A. C. Desenvolvimento municipal das microrregiões do estado do tocantins: uma análise a partir do índice firjan de desenvolvimento municipal. **Desenvolvimento em Questão**, v. 16, n. 45, p. 44–62, out. 2018. Disponível em:<https://www.revistas.unijui.edu.br/index.php/desenvolvimentoemquestao/article/view/6542>.
+
+NORTH, D. C. Agriculture in Regional Economic Growth. **Journal of Farm Economics**, v. 41,n. 5, p. 943, dez. 1959. ISSN 10711031. Disponível em: <https://academic.oup.com/ajae/article-lookup/doi/10.2307/1235230>.
+
+ROMER, P. M. **Human Capital And Growth: Theory and Evidence**. [S.l.], 1989. (WorkingPaper Series, 3173). Disponível em: <http://www.nber.org/papers/w3173>.
+
+SCHULTZ, T. W. Investment in human capital. **The American Economic Review**, American Economic Association, v. 51, n. 1, p. 1–17, 1961. ISSN 00028282. Disponível em:<http://www.jstor.org/stable/1818907>.
+
+SCHUMPETER, J. **Capitalism, Socialism and Democracy**. [S.l.: s.n.], 1942. 
+
+SIEDENBERG, D. Indicadores de desenvolvimento socioeconômico: uma síntese. **Desenvolvimento em Questão**,  v.  1,  n.  1,  p.  45–71,  out.  2011.  Disponível em:<https://revistas.unijui.edu.br/index.php/desenvolvimentoemquestao/article/view/67>.
+
+THIRLWALL, A. The balance of payments constraint as an explanation of the international growth rate differences. **BNL Quarterly**, v. 32, n. 128, 1979.
+</div>
+
+
+
+
+

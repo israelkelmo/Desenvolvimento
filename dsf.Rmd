@@ -56,18 +56,12 @@ factpal <- colorFactor("inferno", vars_paleta[,1])
 
 
 <h1 class="titulo"><b>REAL DESEMPENHO EDUCACIONAL EM COMPARAÇÃO AOS VALORES DOS INDICADORES EDUCACIONAIS: UMA ANÁLISE DO IFDM DE MATO GROSSO, 2005-2015</b></h1>
-<center>
-<table class="teste">
-<tr>
-<td style="border-top: 3px solid black; border-bottom: 3px solid black;"><b>CAIO HATANAKA, ELISAMA RIBEIRO, ISRAEL KELMO, LUCAS DORNA E LUIGI MARTINELLI</b></td>
-</tr></table>
-</center>
 <br/>
 
 <p class="tituloresumo">Resumo</p>
 
 <p class="resumo">
-A educação é uma das variáveis chaves que determina o nível de desenvolvimento de uma sociedade e sua oferta deve atender as necessidades sociais. A finalidade deste trabalho é verificar se os valores estimados do Índice de Desenvolvimento Municipal (IFDM) educacional refletem o real desempenho da educação, e seus agentes, nos municípios do Estado de Mato Grosso (MT), entre 2005 e 2015. Assim, foram realizadas análises exploratórias dos dados do IFDM, com foco no Índice educacional, assumindo a ideia de que o IFDM elevado, em comparação com a realidade, não reflete o real nível educacional dos municípios mato-grossenses. Os resultados encontrados foram que, apesar de 88% dos municípios de MT apresentarem um IFDM de moderadamente desenvolvidos, o desempenho dos dez municípios com IFDM mais elevados com os dez mais baixos, os resultados, tanto na Prova Brasil quanto no ENEM, foram semelhantes, diferindo-se apenas na quantidade de escolas participantes.</p>
+A educação é uma das variáveis-chave que determina o nível de desenvolvimento de uma sociedade e sua oferta deve atender às necessidades sociais. A finalidade deste trabalho é verificar se os valores estimados do Índice Firjan de Desenvolvimento Municipal (IFDM) educacional refletem o real desempenho da educação, e seus agentes, nos municípios do Estado de Mato Grosso (MT), entre 2005 e 2015. Assim, foram realizadas análises exploratórias dos dados do IFDM, com foco no Índice educacional, assumindo a ideia de que o IFDM elevado, em comparação com a realidade, não reflete o real nível educacional dos municípios mato-grossenses. Os resultados encontrados foram que, apesar de 88% dos municípios de MT apresentarem um IFDM de moderadamente desenvolvidos, o desempenho dos dez municípios com IFDM mais elevados com os dez mais baixos, os resultados, tanto na Prova Brasil quanto no ENEM, foram semelhantes, diferindo-se apenas na quantidade de escolas participantes.</p>
 
 <p class="resumo"><b>Palavras-chave:</b> IFDM; Índice Educacional; Mato Grosso.</p>
 <br/>
@@ -75,7 +69,7 @@ A educação é uma das variáveis chaves que determina o nível de desenvolvime
 <p class="tituloresumo">Abstract</p>
 
 <p class="abstract">
-Education is one of the key variables that determines the level of development of a society and its offer must meet social needs. The purpose of this work is to verify whether the estimated values of the Educational Municipal Development Index (MDF) reflect the real performance of education, and its agents, in the municipalities of the State of Mato Grosso (MT), between 2005 and 2015. Thus, exploratory analyses of the MFI data were performed, focusing on the educational index, assuming the idea that the high MIF, compared to reality, does not reflect the real educational level of the municipalities of Mato Grosso. The results found were that, although 88% of the municipalities of MT presented a moderately developed MDM, the performance of the ten municipalities with higher MDM with the lowest ten, the results, both in the Brazil Test and in the ENEM, were similar, differing only in the number of participating schools.</p>
+Education is one of the key variables that determines the level of development of a society and its offer must meet social needs. The purpose of this work is to verify whether the estimated values of the Firjan Educational Municipal Development Index (IFDM) reflect the real performance of education, and its agents, in the municipalities of the State of Mato Grosso (MT), between 2005 and 2015. Thus, exploratory analyses of the MFI data were performed, focusing on the educational index, assuming the idea that the high MIF, compared to reality, does not reflect the real educational level of the municipalities of Mato Grosso. The results found were that, although 88% of the municipalities of MT presented a moderately developed MDM, the performance of the ten municipalities with higher MDM with the lowest ten, the results, both in the Brazil Test and in the ENEM, were similar, differing only in the number of participating schools.</p>
 
 <p class="resumo"><b>Keywords:</b> IFDM; Educational Index; Mato Grosso.</p>
 <br/>
@@ -83,7 +77,7 @@ Education is one of the key variables that determines the level of development o
 <p class="section">1\. INTRODUÇÃO</p>
 
 <p class="normal">
-O desenvolvimento é fator que representa a evolução das sociedades ao longo do tempo. Uma nação com capacidade de utilizar suas riquezas em prol do benefício da sociedade e dos futuros membros de sua comunidade tem um potencial de ascensão maior ao longo do tempo. Schumpeter conceitualiza o desenvolvimento econômico como transformações econômicas e produtivas que ocorrem nos territórios onde as empresas inovadoras estão localizadas e há atividades motoras do desenvolvimento condicionando sua especialização produtiva e sua competitividade nos mercados (BARQUERO, 2014).</p>
+O desenvolvimento é fator que representa a evolução das sociedades ao longo do tempo. Uma nação com capacidade de utilizar suas riquezas em prol do benefício da sociedade e dos futuros membros de sua comunidade tem um potencial de ascensão maior a longo prazo. Schumpeter conceitualiza o desenvolvimento econômico como transformações econômicas e produtivas que ocorrem nos territórios onde as empresas inovadoras estão localizadas e há atividades motoras do desenvolvimento condicionando sua especialização produtiva e sua competitividade nos mercados (BARQUERO, 2014).</p>
 
 
 <p class="normal">
@@ -94,13 +88,10 @@ Desenvolvimento econômico difere-se do crescimento econômico. O crescimento es
 
 
 <p class="normal">
-Dentro da estética do desenvolvimento econômico, temos a educação como um dos determinantes dos resultados observados tanto no curto e longo-prazo. Uma sociedade com alto grau educacional tem a capacidade de obter melhores salários, melhor qualidade de vida e melhor desenvolvimento social e tecnológico. O suporte educacional é importante tanto nos estágios iniciais do desenvolvimento humano quanto nos estágios posteriores. O investimento em educação deve estar alinhado tanto com as necessidades sociais quanto com o papel das instituições governamentais. A falha em distribuir o investimento de forma a ignorar as reais necessidades da população gera um viés analítico; passando uma impressão de desenvolvimento que não é observado na realidade.</p>
+Dentro da estética do desenvolvimento econômico, temos a educação como um dos determinantes dos resultados observados tanto no curto e longo prazo. Uma sociedade com alto grau educacional tem a capacidade de obter melhores salários, melhor qualidade de vida e melhor desenvolvimento social e tecnológico. O suporte educacional é importante tanto nos estágios iniciais do desenvolvimento humano quanto nos estágios posteriores. O investimento em educação deve estar alinhado tanto com as necessidades sociais quanto com o papel das instituições governamentais. A falha em distribuir o investimento de forma a ignorar as reais necessidades da população gera um viés analítico; passando uma impressão de desenvolvimento que não é observado na realidade.</p>
 
 <p class="normal">
 Dentro da metodologia econômica, existem diferentes formas de mensurar o desenvolvimento econômico de uma região. Normalmente, o desenvolvimento é representado por um indicador cujo os valores variam entre zero e um. Dentro dos indicadores, estão presentes os dados quantitativos levantados em cada uma das áreas de interesse do desenvolvimento econômico; e os mesmos estão associados com parâmetros de "peso" que representam o quão impactante é a área de interesse para o desenvolvimento. Entretanto, a crescente evolução de uma área específica da economia pode enviesar o resultado final do indicador, mostrando uma realidade numérica que não é observada no mundo real. Este trabalho busca verificar se os valores estimados do Índice Firjan de Desenvolvimento Municipal (IFDM) educacional refletem o real desempenho da educação -- e seus agentes -- nos municípios do Estado de Mato Grosso (MT).</p>
-
-<p class="normal">
-Tendo como motivação para a presente investigação a tentativa de demonstrar que os municípios de Mato Grosso (MT), apresentados na Tabela 3 da seção 4, apesar de apresentarem um IFDM educacional considerado plenamente desenvolvido, não detêm uma elevada qualidade educacional real.</p>
 
 <p class="normal">
 Dessa forma, o problema do trabalho consiste em verificar se o IFDM educacional dos municípios de MT não reflete a real situação educacional de cada um. Tendo como hipótese, a ideia de que o IFDM elevado, em comparação com a realidade, mascara a condição educacional a que cada indivíduo dos municípios mato-grossenses são submetidos.</p>
@@ -157,7 +148,7 @@ Ao aplicar a metodologia de Aria e Cuccurullo (2017) nos dados referentes ao Cap
 
 <p class="tabela">Figura 1 - <i>Network</i> de co-citação referente ao tema "Capital Humano".</p>
 <center>
-<iframe src="figure/caphumano.html" width="90%" height="500px"></iframe>
+<img src="https://64.media.tumblr.com/da95fbf51dae58d51b322734602792f7/13c0d1fe2bca939b-86/s1280x1920/6a80e2d1f77958c6309a43321d4897efaf035126.png" width="80%">
 </center>
 
 <p class="ref">Fonte: Desenvolvido pelo autor com base nos dados retirados do Scopus no dia 24/11/2020.</p>
@@ -206,7 +197,7 @@ Ao aplicar a analise de dados proposta por \citeonline{bibliometrix} nos dados o
 
 <p class="tabela">Figura 2 - <i>Network</i> de co-citação referente ao tema "Educação e Desenvolvimento".</p>
 <center>
-<iframe src="figure/edu.html" width="90%" height="500px"></iframe>
+<img src="https://64.media.tumblr.com/44e966ab3cbfc0bda9c5eb18c3e30bee/a10f968e1fc3a9aa-25/s1280x1920/051a7d08a475eb82aacaac34d7c93fb19e30bb87.png" width="80%">
 </center>
 
 <p class="ref">Fonte: Desenvolvido pelo autor com base nos dados retirados do Scopus no dia 24/11/2020.</p>
@@ -224,7 +215,7 @@ Não há consenso na literatura sobre como definir o nível de qualidade docente
 O uso de indicadores de desenvolvimento surge em meio aos estudos relacionados ao desenvolvimento, que na década de 1950, era um sinônimo de crescimento econômico, sendo assim medido através do Produto Interno Bruto de um país. Entretanto, com a evolução dos estudos sobre desenvolvimento, e sua consequente separação do conceito de crescimento econômico, levou a criticas relacionadas ao uso do PIB, já que crescimento econômico não necessariamente implica em desenvolvimento econômico. Deste modo, em 1990, o PNUD (Programa das Nações Unidas para o Desenvolvimento) apresenta em um relatório anual o IDH (Índice de Desenvolvimento Humano) que leva, além de dados econômicos, a consideração acerca de aspectos sociais relevantes ao desenvolvimento (SIDENBERG, 2011).</p>
 
 <p class="normal">
-Segundo Siedenberg (2011), na década de 1960 surgem críticas ao uso do PIB como um indicador de desenvolvimento, já que as politicas de desenvolvimento baseadas no PIB não levavam necessariamente a um desenvolvimento econômico e social, apenas econômico. Dentre os motivos enumerados por Siedenberg (2011) como questionamento do PIB como indicador de desenvolvimento, estão: a renda per capita calculada não reflete a verdadeira situação do poder de compra (<i>purchasing power parities</i>) de um país; e a renda per capita média que esconde as diferenças sociais entre regiões, já que a renda pode estar concentrada em um número pequeno de pessoas dentro de uma sociedade, levando a uma falsa percepção de qualidade de vida.</p>
+Segundo Siedenberg (2011), na década de 1960 surgem críticas ao uso do PIB como um indicador de desenvolvimento, já que as politicas de desenvolvimento baseadas no PIB não levavam necessariamente a um desenvolvimento econômico e social, apenas econômico. Dentre os motivos enumerados por Siedenberg (2011) como questionamento do PIB como indicador de desenvolvimento, estão: a renda per capita calculada não reflete a verdadeira situação do poder de compra (<i>purchasing power parities</i>) de um país; e a renda <i>per capita</i> média que esconde as diferenças sociais entre regiões, já que a renda pode estar concentrada em um número pequeno de pessoas dentro de uma sociedade, levando a uma falsa percepção de qualidade de vida.</p>
 
 <p class="normal">
 Assim, Siedenberg (2011) aponta que indicadores são apenas unidades de medidas parciais e substitutivas, sendo necessária sua inserção em um contexto teórico-metodológico que lhe de um significado, de modo que represente um aspecto relevante para o desenvolvimento. Assim, a tabela abaixo mostra as características dos indicadores de desenvolvimento, segundo Siedenberg (2011):</p>
@@ -247,7 +238,7 @@ Assim, Siedenberg (2011) aponta que indicadores são apenas unidades de medidas 
 </tr><tr style="border-bottom: 2px solid black;">
 <td>Capaz de combinar aspectos gerais com específicos</td>
 </tr><tr>
-<td rowspan=3 style="border-bottom: 2px solid black;"><b>Principais tipos</b<</td><td style="border-bottom: 1px dashed grey;">Indicadores <i>per capita</i></td>
+<td rowspan=3 style="border-bottom: 2px solid black;"><b>Principais tipos</b></td><td style="border-bottom: 1px dashed grey;">Indicadores <i>per capita</i></td>
 </tr><tr style="border-bottom: 1px dashed grey;">
 <td>Indicadores percentuais</td>
 </tr><tr style="border-bottom: 2px solid black;">
@@ -313,7 +304,7 @@ De acordo com Medeiros (2018) a metodologia utilizada pelo Índice de Firjan bas
 Para verificar o nível de desenvolvimento humano em cada município, o índice de Firjan fragmenta o seu valor, que pode variar dentro do intervalo de 0 a 1, em quatro categorias: I) IFDM entre 0,0 e 0,4; II) IFDM entre 0,4 e 0,6; III) IFDM entre 0,6 e 0,8; e IV) IFDM entre 0,8 e 1,0. Com os municípios dentro da categoria I considerados pouco (baixo) desenvolvidos; com os da categoria II apresentando um nível de desenvolvimento regular; da categoria III, sendo considerados moderadamente desenvolvidos; e os da categoria IV) apresentando um desenvolvimento pleno (alto) (FIRJAN, 2016).</p>
 
 <p class="normal">
-Na Figura 3 são apresentados os IFDM de cada município de Mato Grosso - multiplicado por 100 (IFDM * 100) --- referentes ao ano de 2018, tendo como ano base 2016.</p>
+Na Figura 3 são apresentados os IFDM de cada município de Mato Grosso - multiplicado por 100 (IFDM $\times$ 100) --- referentes ao ano de 2018, tendo como ano base 2016.</p>
 
 <p class="tabela">Figura 3 - IFDM dos 141 municípios de Mato Grosso no ano de 2016.</p>
 
@@ -352,34 +343,17 @@ municipios2 %>%
 <p class="normal">
 Como esperado, é observada uma concentração dos municípios dentro dos valores próximo ao amplo desenvolvimento, representando que os municípios mato-grossenses apresentam um bom desempenho em ambos aspectos quando observados pela ótica do indicador. Ao ranquear os dados, observa-se que Lucas do Rio Verde foi o município com melhor desempenho do Estado, superando a capital que aparece logo em seguida. A Tabela 3 apresenta os dez principais municípios em questões de desenvolvimento social e econômico pela ótica da Firjan.</p>
 
-<p class="tabela">Tabela 3 - IFDM dos dez municípios com melhor classificação.</p>
+<p class="tabela">Tabela 3 - IFDM dos municípios mato-grossenses, 2016.</p>
 
-<table class="modificada2">
-<tr style="border-top: 3px solid black; border-bottom: 2px solid black;">
-<th>Município</th><th>IFDM</th><th>IFDM <br/>(Emprego e Renda)</th><th>IFDM<br/>(Educação)</th>
-</tr><tr style="border-bottom: 1px dashed grey;">
-<td>Lucas do Rio Verde</td><td>0,8354</td><td>0,7240</td><td>0,9192</td>
-</tr><tr style="border-bottom: 1px dashed grey;">
-<td>Cuiabá</td><td>0,8266</td><td>0,7776</td><td>0,8202</td>
-</tr><tr style="border-bottom: 1px dashed grey;">
-<td>Diamantino</td><td>0,8182</td><td>0,6723</td><td>0,8716</td>
-</tr><tr style="border-bottom: 1px dashed grey;">
-<td>Sorriso</td><td>0,8179</td><td>0,7857</td><td>0,8304</td>
-</tr><tr style="border-bottom: 1px dashed grey;">
-<td>Campo Novo do Parecis</td><td>0,8176</td><td>0,7431</td><td>0,8333</td>
-</tr><tr style="border-bottom: 1px dashed grey;">
-<td>Sinop</td><td>0,8064</td><td>0,7419</td><td>0,8072</td>
-</tr><tr style="border-bottom: 1px dashed grey;">
-<td>Campo Verde</td><td>0,8032</td><td>0,7339</td><td>0,8017</td>
-</tr><tr style="border-bottom: 1px dashed grey;">
-<td>Nova Mutum</td><td>0,8006</td><td>0,6633</td><td>0,8659</td>
-</tr><tr style="border-bottom: 1px dashed grey;">
-<td>Rondonópolis</td><td>0,8004</td><td>0,6993</td><td>0,8323</td>
-</tr><tr style="border-bottom: 3px solid black;">
-<td>Primavera do Leste</td><td>0,7936</td><td>0,6359</td><td>0,8896</td>
-</tr></table>
+```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="90%"}
 
+datatable(firjan, colnames = c("Município", "IFDM", "IFDM (Emprego e renda)", "IFDM (Educação)"))
+
+```
 <p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pela Firjan.</p>
+
+<p class="normal">
+Logo de início, percebemos na Tabela 3 que os resultados para o IFDM (Educação) nos dez municípios, mesmo sendo elevados e considerados em alto estágio de desenvolvimento, não refletem em elevados resultados para o IFDM (Emprego e Renda), considerados em desenvolvimento moderado. Tendo em vista que o IFDM (Emprego e Renda) inclui fatores relacionados ao mercado de trabalho formal, onde encontram-se boa parte dos trabalhadores qualificados, com considerável nível educacional, pode-se dizer que existe um contraste entre a realidade e a teoria de Lucas (1988), que demonstra uma relação positiva entre renda e qualificação.</p>
 <br/>
 
 <p class="section">4.2 Educação nos dez municípios mais desenvolvidos</p>
@@ -388,7 +362,10 @@ Como esperado, é observada uma concentração dos municípios dentro dos valore
 A educação, como dito anteriormente, é uma das três áreas componentes do Índice Firjan de Desenvolvimento Municipal. O acompanhamento dessa área é realizada com o propósito de constatar se o desempenho educacional de cada município se aproxima ou distância das metas do Plano Nacional de Educação (PNE), do Ministério da Educação (MEC). Para realizar tal acompanhamento, a educação é analisada através da coleta de dados, disponibilizados pelo MEC, de seis indicadores do ensino fundamental: I) atenção voltada à educação infantil; II) evasão; III) não correspondência entre idade e série; IV) docentes com ensino superior; V) média de horas das aulas diárias; e VI) resultado do Índice de Desenvolvimento da Educação Básica (IDEB) (FIRJAN, 2018).</p>
 
 <p class="normal">
-Para constatar se os IFDM educacionais, anteriormente apresentados na Tabela 2, condizem com a realidade dos municípios em questão, são analisados a taxa de abandono de discentes de institutos/escolas/colégios federais, estaduais, municipais e privadas. Na figura abaixo, é ilustrado o desempenho das escolas na Prova Brasil realizada no ano de 2011, onde são relacionadas a média obtida pela escola em cada um dos campos exigidos no exame --- Língua Portuguesa e Matemática ---; sendo o valor máximo para cada um dos campos estando em 500 pontos.</p>
+Vale destacar que o IFDM (Educação) inclui apenas um indicador que sinaliza o desempenho dos alunos, que é o IDEB, os demais indicadores não são suficientes para inferir se os alunos tiveram ou não um processo educacional de boa qualidade. Pois, assim como foi dito por Duflo (2001), a qualidade do ensino não depende tanto da quantidade de anos/horas de estudo e da escolaridade do professor. Existem fatores que interferem no desenvolvimento dos alunos que vão muito além da sala de aula. Pode-se apontar alguns como os fatores não institucionais, mencionados por Heckman (2003), e uma variável subjetiva, mencionada por Lucas (1988), ambos autores citados anteriormente na revisão bibliográfica.</p>
+
+<p class="normal">
+Para constatar se os IFDM educacionais, anteriormente apresentados na Tabela 3, condizem com a realidade dos municípios em questão, são analisados a taxa de abandono de discentes de institutos/escolas/colégios federais, estaduais, municipais e privadas. Na figura abaixo, é ilustrado o desempenho das escolas na Prova Brasil realizada no ano de 2011, onde são relacionadas a média obtida pela escola em cada um dos campos exigidos no exame --- Língua Portuguesa e Matemática ---; sendo o valor máximo para cada um dos campos estando em 500 pontos.</p>
 
 <p class="tabela">Figura 5 - Prova Brasil, 2011.</p>
 
@@ -746,7 +723,7 @@ Também foi relatado que, ao comparar o desempenho dos 10 municípios com IFDM m
 Estes resultados sugerem que, nos municípios analisados, não há um investimento público concentrado e bem planejado -- com vistas a uma educação de qualidade -- principalmente na formação da primeira infância, como defendida por Heckman (2003). Visto que, caso o investimento fosse focalizado, não desconsiderando o grau de participação familiar na formação individual na infância (tão essencial quanto a formação institucional formal), os desempenhos obtidos na Prova Brasil e ENEM seriam mais significativos, pois, quando realizada essa educação precoce de qualidade é possível que os indivíduos se tornem mais capazes, sociáveis, persistentes e com objetivos claros, além de haver um aumento significativo na possibilidade de sucesso futuro precoce.</p>
 
 <p class="normal">
-Desta forma, com tais análises exploratórias, comprovou-se a hipótese de que o IFDM elevado, em comparação com a realidade, mascara a condição educacional a que cada indivíduo dos municípios mato-grossenses são submetidos. Entretanto, análises mais profundas são necessárias para a real avaliação da situação educacional dos municípios mato grossenses, assim como as condições que levam a distorção do real nível educacional dos municípios analisados neste trabalho.</p>
+Desta forma, com tais análises exploratórias, comprovou-se a hipótese de que o IFDM elevado, em comparação com a realidade, mascara a condição educacional a que cada indivíduo dos municípios mato-grossenses são submetidos. Entretanto, análises mais profundas são necessárias para a real avaliação da situação educacional dos municípios mato grossenses, assim como as condições que levam a distorção do real nível educacional dos municípios analisados neste trabalho, visto as limitações do índice por desconsiderar variáveis essenciais na formação dos alunos e considerar, em grande parte, variáveis que não afetam tanto no resultado da qualificação dos mesmos.</p>
 <br/>
 
 <p class="section">NOTAS TÉCNICAS</p>

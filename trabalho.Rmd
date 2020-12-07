@@ -5,6 +5,7 @@ output:
     theme: readable #yeti #lumen
     orientation: columns
     vertical_layout: fill
+    css: "css.css"
 ---
 
 ```{r setup, include=FALSE}
@@ -55,12 +56,57 @@ vars_paleta <- estab_agro %>%
   
 factpal <- colorFactor("inferno", vars_paleta[,1])
 
-
-
-
 ```
 
+Considerações Iniciais
+=====================================================================
 
+Column {data-width=1000 .tabset}
+----------------------------------------------------------------------
+
+### Capa
+
+<table class="modificada2">
+<tr>
+<th style="width: 10%"><img src="https://64.media.tumblr.com/95b4b32e6fcd4816fdcb4bf72434dfd2/8c073ff600142848-b5/s2048x3072/660ce221acee6d2146d5d1d3adc2fe3014a14a49.png" width="100%"></th><th>UNIVERSIDADE FEDERAL DE MATO GROSSO<br/>FACULDADE DE ECONOMIA</th><th style="width:10%"><img src="https://64.media.tumblr.com/f56f0a79078809185f75447325842fa4/6b447b0e13bf2894-a2/s1280x1920/a56764a6d25b4a5ba1682e0c56abf9b44b6939b1.jpg" width="100%"></td>
+</tr>
+</table>
+<br/>
+
+<h1 style="font-size: 16pt;">REAL DESEMPENHO EDUCACIONAL EM COMPARAÇÃO AOS VALORES DOS INDICADORES EDUCACIONAIS: UMA ANÁLISE DO IFDM DE MATO GROSSO, 2005-2015</h1>
+
+<p class="citacao" style="margin-right: 2%; margin-left: 60%; margin-top: 10%;">
+<b>Discentes:</b> Caio Hatanaka; Elisama Ribeiro;<br/> Israel Kelmo; Lucas Dorna e Luigi Martinelli.</br>
+<b>Docente:</b> Prof. Dr. Alexandro Rodrigues Ribeiro.</p> 
+<br/>
+
+### Resumo
+
+<p class="tituloresumo">Resumo</p>
+
+<p class="resumo">
+A educação é uma das variáveis-chave que determina o nível de desenvolvimento de uma sociedade e sua oferta deve atender às necessidades sociais. A finalidade deste trabalho é verificar se os valores estimados do Índice Firjan de Desenvolvimento Municipal (IFDM) educacional refletem o real desempenho da educação, e seus agentes, nos municípios do Estado de Mato Grosso (MT), entre 2005 e 2015. Assim, foram realizadas análises exploratórias dos dados do IFDM, com foco no Índice educacional, assumindo a ideia de que o IFDM elevado, em comparação com a realidade, não reflete o real nível educacional dos municípios mato-grossenses. Os resultados encontrados foram que, apesar de 88% dos municípios de MT apresentarem um IFDM de moderadamente desenvolvidos, o desempenho dos dez municípios com IFDM mais elevados com os dez mais baixos, os resultados, tanto na Prova Brasil quanto no ENEM, foram semelhantes, diferindo-se apenas na quantidade de escolas participantes.</p>
+
+<p class="resumo"><b>Palavras-chave:</b> IFDM; Índice Educacional; Mato Grosso.</p>
+<br/>
+
+### Revisão Bibliográfica - Capital Humano
+
+<p class="tabela">Figura 1 - <i>Network</i> de co-citação referente ao tema "Capital Humano".</p>
+
+<center>
+<img src="https://64.media.tumblr.com/da95fbf51dae58d51b322734602792f7/13c0d1fe2bca939b-86/s1280x1920/6a80e2d1f77958c6309a43321d4897efaf035126.png" width="80%">
+</center>
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados retirados do Scopus no dia 24/11/2020.</p>
+
+### Revisão Bibliográfica - Educação e Desenvolvimento
+
+<p class="tabela">Figura 2 - <i>Network</i> de co-citação referente ao tema "Educação e Desenvolvimento".</p>
+<center>
+<img src="https://64.media.tumblr.com/44e966ab3cbfc0bda9c5eb18c3e30bee/a10f968e1fc3a9aa-25/s1280x1920/051a7d08a475eb82aacaac34d7c93fb19e30bb87.png" width="80%">
+</center>
+
+<p class="ref">Fonte: Desenvolvido pelo autor com base nos dados retirados do Scopus no dia 24/11/2020.</p>
 
 Firjan
 ======================================================================
@@ -76,6 +122,7 @@ municipios2 %>%
   addProviderTiles(provider = providers$OpenTopoMap) %>%
   addCircleMarkers(lat = municipios2$lat, lng = municipios2$lng, color = ~pal2(ifdm*100)) %>%
   addLegend("bottomright", pal = pal2, values = ~ifdm*100)
+
 
 ```
 
@@ -103,111 +150,8 @@ Column{width=200}
 
 ```{r}
 
-firjan %>%
-  arrange(mun) %>%
-  datatable()
+datatable(firjan, colnames = c("Município", "IFDM", "IFDM (Emprego e renda)", "IFDM (Educação)"))
   
-```
-
-Emprego e Renda
-=======================================================================
-
-
-Column {width=1000 .tabset .tabset-fade}
------------------------------------------------------------------------
-
-### Relação entre contratações e dispensas - 2020.
-
-```{r}
-
-emprego_mt <- emprego %>%
-  filter(UF == "MT") 
-
-emprego_mt %>%
-  plot_ly(hoverinfo = "text", text = ~paste("Admissões:", Admissões, "<br>", "Desligamentos:", Desligamentos, "<br>", "Cidade:", mun, "<br>", "IF - Emprego e Renda:", municipios2$emp_rend, "<br>", "Estoque total de empregos:", Estoque), size = ~log(Estoque), showlegend = F, alpha = 0.7, colors = "inferno") %>%
-  add_text(x = 5, y = 5, text = ~mes, frame = ~mesID,
-           textfont = list(color = toRGB("gray80"), size = 50)) %>%
-  add_markers(x = ~log(Admissões), y = ~log(Desligamentos), frame = ~mesID, color = ~mun) %>%
-  layout(title = '',
-         xaxis = list(showgrid = FALSE),
-         yaxis = list(showgrid = FALSE))
-
-
-
-```
-
-### Renda
-
-```{r}
-
-pib_mun %>%
-  mutate(`2002`= as.numeric(gsub(",", ".", as.character(`2002`))), `2003`= as.numeric(gsub(",", ".", as.character(`2003`))), `2004`= as.numeric(gsub(",", ".", as.character(`2004`)))) %>%
-  plot_ly(color = ~Município, colors = "inferno", showlegend = F, alpha = 0.5) %>%
-  add_markers(x = ~Município, y = ~`2002`) %>%
-  add_markers(x = ~Município, y = ~`2003`) %>%
-  add_markers(x = ~Município, y = ~`2004`) %>%
-  add_markers(x = ~Município, y = ~`2005`) %>%
-  add_markers(x = ~Município, y = ~`2006`) %>%
-  add_markers(x = ~Município, y = ~`2007`) %>%
-  add_markers(x = ~Município, y = ~`2008`) %>%
-  add_markers(x = ~Município, y = ~`2009`) %>%
-  add_markers(x = ~Município, y = ~`2010`) %>%
-  add_markers(x = ~Município, y = ~`2011`) %>%
-  add_markers(x = ~Município, y = ~`2012`) %>%
-  add_markers(x = ~Município, y = ~`2013`) %>%
-  add_markers(x = ~Município, y = ~`2014`) %>%
-  add_markers(x = ~Município, y = ~`2015`) %>%
-  add_markers(x = ~Município, y = ~`2016`) %>%
-  add_markers(x = ~Município, y = ~`2017`) %>%
-  layout(title = '',
-         xaxis = list(showgrid = FALSE),
-         yaxis = list(showgrid = FALSE, title = "PIB Municipal (R$ 1000) - 2002 à 2017")) 
-
-```
-
-### Emprego por setor
-
-```{r}
-
-rais %>%
-  filter(UF == "MT") %>%
-  plot_ly(showlegend = F) %>%
-  add_boxplot(x = ~log(agro_2018), name = "Agricultura 2018") %>%
-  add_boxplot(x = ~log(agro_2019), name = "Agricultura 2019") %>%
-  add_boxplot(x = ~log(indus_2018), name = "Indústria 2018") %>%
-  add_boxplot(x = ~log(indus_2019), name = "Indústria 2019") %>%
-  add_boxplot(x = ~log(constr_2018), name = "Construção Civil 2018") %>%
-  add_boxplot(x = ~log(constr_2019), name = "Construção Civíl 2019") %>%
-  add_boxplot(x = ~log(comer_2018), name = "Comércio 2018") %>%
-  add_boxplot(x = ~log(comer_2019), name = "Comércio 2019") %>%
-  add_boxplot(x = ~log(serv_2018), name = "Serviços 2018") %>%
-  add_boxplot(x = ~log(serv_2019), name = "Serviços 2019") %>%
-  layout(title = '',
-         xaxis = list(showgrid = FALSE, title = "Total de contratações (Log)"),
-         yaxis = list(showgrid = FALSE)) 
-
-  
-  
-
-```
-
-### Gini e  somatório da renda média domiciliar per capita
-
-```{r}
-pib_per_capta %>%
-  select(MUNCOD, NUMRENDA) %>%
-  group_by(MUNCOD) %>%
-  filter(MUNCOD %in% c(510010:510895)) %>%
-  summarize(renda_per_media = mean(NUMRENDA)) %>%
-  bind_cols(mun = gini_mun$Município) %>%
-  bind_cols(gini = gini_mun$`2010`) %>%
-  plot_ly(showlegend = F, hoverinfo = "text", text = ~paste("Município:", mun, "<br>", "Média do somatório da renda <i>per capita</i>:", renda_per_media, "<br>", "Gini municipal:", gini)) %>%
-  add_markers(x = ~gini, y = ~log(renda_per_media), color = ~mun, colors = "inferno", size = ~log(renda_per_media), alpha = 0.6) %>%
-  layout(title = '',
-         xaxis = list(showgrid = FALSE, title = "Gini municipal"),
-         yaxis = list(showgrid = FALSE, title = "Média do somatório da renda domiciliar (log)"))
-  
-
 ```
 
 Educação (10 melhores municípios) {data-navmenu="Educação"}
@@ -457,33 +401,67 @@ subplot8 <- desgraca %>%
 
 subplot(subplot1, subplot2, subplot3, subplot4, subplot6, subplot8, nrows = 3, shareX = F)
 
-  
-
-
 
 ```
 
-Agricultura
-====================================================================================
+Considerações Finais {data-navmenu="Considerações Finais"}
+=======================================================================
 
+<ul class="normal">
+<li>Municípios com alto grau de desenvolvimento apresentam baixo desempenho educacional;</li>
+<li>Ao considerar apenas a integração estudantil, o IFDM ignora o desempenho dos estudantes;</li>
+<li>A diferença entre os municípios desenvolvidos e os de baixo desenvolvimento foi apenas a quantidade de escolas. As notas, no entanto, apresentam o mesmo valor;</li>
+<li>O investimento em educação é feito para beneficiar a quantidade e não a qualidade.</li>
+</ul>
 
+Referências {data-navmenu="Considerações Finais"}
+=======================================================================
 
-Column {width=500 .tabset .tabset-fade}
------------------------------------------------------------------------
+<p class="section">REFERÊNCIAS</p>
 
-### tab1 
+<div class="referencia">
+ARIA, M.; CUCCURULLO, C. bibliometrix: An R-tool for comprehensive sciencemapping analysis. **Journal of Informetrics**, v. 11, n. 4, p. 959–975, 2017. Disponível em:<https://ideas.repec.org/a/eee/infome/v11y2017i4p959-975.html>.
 
-```{r}
+BARQUERO, A. V. Os territorios innovadores: Espaços estratégicos do desenvolvimento. **Crítica e Sociedade**, n. 2, 2014.
 
-estab_agro %>%
-leaflet() %>%
-  addTiles() %>%
-  addCircles(lat = ~LATITUDE, lng = ~LONGITUDE, color = ~factpal(estab_agro$NOM_TIPO_SEGLOGR), label = ~htmlEscape(estab_agro$NOM_TIPO_SEGLOGR))
-  
+BECKER, G. S. Investment in human capital: A theoretical analysis. **Journal of Political Economy**, v. 70, n. 5, out. 1962. Disponível em: <https://www.journals.uchicago.edu/doi/10.1086/258724>.
 
-```
+DAVIS,  L.;  NORTH,  D. **Institutional  change  and  American  economic  growth**. Cambridge [u.a.]: Cambridge Univ. Press, 1971. ISBN 0521081114. Disponível em: <http://gso.gbv.de/DB=2.1/CMD?ACT=SRCHA&SRT=YOP&IKT=1016&TRM=ppn+027388573&sourceid=fbw_bibsonomy>.
 
- 
+DUFLO, E. Schooling and labor market consequences of school construction in indonesia: Evidence from an unusual policy experiment. **The American Economic Review**, American Economic Association, v. 91, n. 4, p. 795–813, 2001. ISSN 00028282. Disponível em:<http://www.jstor.org/stable/2677813>.
+
+FIRJAN. **Anexo metodológico – IFDM 2018 **– ano base 2016. Federação das Indústrias do Estado do Rio de Janeiro - FIRJAN, 2016.
+
+FIRJAN. **IFDM 2018: Índice Firjan desenvolvimento municipal, ano base 2016**. Federação das Indústrias do Estado do Rio de Janeiro - FIRJAN, 2018.
+
+HANUSHEK, E. Interpreting recent research on schooling in developing countries. **WorldBank Research Observer**, v. 10, n. 2, p. 227–246, 1995. ISSN 02573032.
+
+HARRIS, D.; SASS, T. Teacher training, teacher quality and student achievement. **Journal of Public Economics**, v. 95, n. 7-8, p. 798–812, 2011. ISSN 00472727. Disponível em: <https://www.scopus.com/inward/record.uri?eid=2-s2.0-79955015642&doi=10.1016%2fj.jpubeco.2010.11.009&partnerID=40&md5=2788dbd1af2c92456b7ce4aafc896d46>.
+
+HECKMAN, J. J.; CARNEIRO, P. Human capital policy. **National Bureau of Economic Research**, 2003. Disponível em: <http://www.nber.org/papers/w9495>.
+
+KALDOR, N. A Model of Economic Growth. **The Economic Journal**, v. 67, n. 268, p.591–624, 12 1957. ISSN 0013-0133. Disponível em: <https://doi.org/10.2307/2227704>.
+
+KEYNES, J. M. **The General Theory of Employment, Interest and Money**. [S.l.]: Macmillan,1936. 14th edition, 1973.
+
+KRASNIQI, F. X.; TOPXHIU, R. M. The importance of investment in human capital: Becker, Schultz and Heckman. **Scientific Papers**, v. 6, ago. 2016. Disponível em:<http://www.scientificpapers.org/wp-content/files/1569_KrasniqiTopxhiu-The_Importance_of_Investment_in_Human_Capital.pdf>.
+
+LUCAS, R. E. On the mechanics of economic development. **Journal of Monetary Economics**, v. 22, n. 1, p. 3 – 42, 1988. ISSN 0304-3932. Disponível em:<http://www.sciencedirect.com/science/article/pii/0304393288901687>.
+
+MEDEIROS, A.; LUANA dos S.; MOURA, A. C. Desenvolvimento municipal das microrregiões do estado do tocantins: uma análise a partir do índice firjan de desenvolvimento municipal. **Desenvolvimento em Questão**, v. 16, n. 45, p. 44–62, out. 2018. Disponível em:<https://www.revistas.unijui.edu.br/index.php/desenvolvimentoemquestao/article/view/6542>.
+
+NORTH, D. C. Agriculture in Regional Economic Growth. **Journal of Farm Economics**, v. 41,n. 5, p. 943, dez. 1959. ISSN 10711031. Disponível em: <https://academic.oup.com/ajae/article-lookup/doi/10.2307/1235230>.
+
+ROMER, P. M. **Human Capital And Growth: Theory and Evidence**. [S.l.], 1989. (WorkingPaper Series, 3173). Disponível em: <http://www.nber.org/papers/w3173>.
+
+SCHULTZ, T. W. Investment in human capital. **The American Economic Review**, American Economic Association, v. 51, n. 1, p. 1–17, 1961. ISSN 00028282. Disponível em:<http://www.jstor.org/stable/1818907>.
+
+SCHUMPETER, J. **Capitalism, Socialism and Democracy**. [S.l.: s.n.], 1942. 
+
+SIEDENBERG, D. Indicadores de desenvolvimento socioeconômico: uma síntese. **Desenvolvimento em Questão**,  v.  1,  n.  1,  p.  45–71,  out.  2011.  Disponível em:<https://revistas.unijui.edu.br/index.php/desenvolvimentoemquestao/article/view/67>.
+
+THIRLWALL, A. The balance of payments constraint as an explanation of the international growth rate differences. **BNL Quarterly**, v. 32, n. 128, 1979.
+</div>
 
 
  
