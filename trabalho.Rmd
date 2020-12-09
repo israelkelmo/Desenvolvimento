@@ -6,6 +6,8 @@ output:
     orientation: columns
     vertical_layout: fill
     css: "css.css"
+    logo: "https://64.media.tumblr.com/7447ef958c4df459d749da6944a2cb1e/56aa92fd229ec8f8-ee/s75x75_c1/4e4cb9aec4705f40f524c53f6dfd833d19c1b0d9.png"
+    
 ---
 
 ```{r setup, include=FALSE}
@@ -38,6 +40,36 @@ rais <- import("dados/rais.xlsx", sheet = 6)
 rais <- rais[2:5573,]
 gini_mun <- import("dados/ginibr.xlsx")
 pib_per_capta <- import("dados/RENDABR10.dbf")
+
+###
+saeb_2019 <- import("saeb_2019.xlsx")
+saeb_2019 <- saeb_2019[,1:10]
+saeb_2019 <- saeb_2019[, c(1, 2, 4, 5, 6, 9, 10)]
+saeb_2019 <- saeb_2019 %>%
+  mutate(ano = 2019)
+
+
+###
+saeb_2017 <- import("saeb_2017.xlsx")
+saeb_2017 <- saeb_2017[,1:10]
+saeb_2017 <- saeb_2017[, c(1, 2, 4, 5, 6, 9, 10)]
+saeb_2017 <- saeb_2017 %>%
+  mutate(ano = 2017)
+
+###
+
+saeb_2015 <- import("saeb_2015.xls")
+saeb_2015 <- saeb_2015 %>%
+  mutate(CO_UF = coduf, NO_UF = uf, NO_MUNICIPIO = mun, DEPENDENCIA_ADM = tipo, LOCALIZACAO = localizacao, MEDIA_9_LP = lp, MEDIA_9_MT = mat, ano = 2015)
+saeb_2015 <- saeb_2015[, 10:16]
+saeb_2015 <- saeb_2015 %>%
+  mutate(ano = 2015)
+
+###
+
+saeb_completa <- saeb_2019 %>%
+  bind_rows(saeb_2017) %>%
+  bind_rows(saeb_2015)
 
 ########
 municipios2 <- municipios %>%
@@ -108,6 +140,91 @@ A educação é uma das variáveis-chave que determina o nível de desenvolvimen
 
 <p class="ref">Fonte: Desenvolvido pelo autor com base nos dados retirados do Scopus no dia 24/11/2020.</p>
 
+### Autores Evolucionários e da NEI
+
+<p class="normal">
+Quadro 1 - Principais contribuições bibliográficas utilizadas sobre Teoria Evolucionária e Nova Economia Institucional.</p>
+
+<table class="modificada" style="border: 3px solid black; width: 95%;">
+<tr>
+<th style="border-bottom: 2px dashed grey;" colspan="3"><center>Bibliografia</center></th>
+</tr><tr style="border-bottom: 2px solid black;">
+<td><center><b>Área de Estudo</b></center></td><td><center><b>Autores</b></center></td><td><center><b>Contribuições</b></center></td>
+</tr><tr>
+<td rowspan="2" style="border-right: 1px solid black; border-bottom: 2px solid black;"><b>Economia da Tecnologia</b></td><td style="border:1px solid black;" rowspan="2">SCHUMPETER (1939; 1961)</td><td style="border-bottom: 1px dashed grey;">Conceitos de ciclos e crises econômicas de curto, médio e longo-prazo.</td>
+</tr><tr style="border-bottom: 2px solid black;">
+<td>Abordagem ortodoxa da microeconomia clássica; apresentando a inovação como o principal motor de desenvolvimento do capitalismo.</td>
+</tr><tr style="border-bottom: 1px solid black;">
+</tr><tr>
+<td rowspan="2" style="border-right: 1px solid black; border-bottom: 3px solid black;"><b>Nova Economia Institucional</b></td><td style="border-bottom: 1px solid black; border-right: 1px solid black;">DAVIS & NORTH (1971)</td><td style="border-bottom: 1px solid black;">Apresentam a importância das instituições como forma de regular e prover o desenvolvimento econômico das sociedades.</td>
+</tr><tr style="border-bottom: 3px solid black;">
+<td style="border-right: 1px solid black;">NORTH (1959)</td><td>Apresenta as características do desenvolvimento regional com foco no comérico, bem-estar social e produção agrícola.</td>
+</tr>
+</table>
+<p class="ref" style="page-break-after: always;">
+Fonte: Desenvolvido pelo autor.</p>
+
+### Característica dos indicadores 
+
+<p class="tabela">Tabela 1 – Indicadores de desenvolvimento e suas características.</p>
+
+<table class="modificada2">
+<tr style="border-top: 3px solid black;">
+<td rowspan=7 style="border-bottom: 2px solid black;"><b>Requisitos Básicos</b></td><td style="border-bottom: 1px dashed grey;">Simples</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Dinâmico</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Sensível</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Holístico</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Confiável</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Participativo</td>
+</tr><tr style="border-bottom: 2px solid black;">
+<td>Capaz de combinar aspectos gerais com específicos</td>
+</tr><tr>
+<td rowspan=3 style="border-bottom: 2px solid black;"><b>Principais tipos</b></td><td style="border-bottom: 1px dashed grey;">Indicadores <i>per capita</i></td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Indicadores percentuais</td>
+</tr><tr style="border-bottom: 2px solid black;">
+<td>Indicadores estruturais</td>
+</tr><tr>
+<td rowspan=3 style="border-bottom: 2px solid black;"><b>Principais funções</b></td><td style="border-bottom: 1px dashed grey;">Diagnosticar as condições de desenvolvimento social ou setorial</td style="border-bottom: 1px dashed grey;">
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Propiciar informações sobre os problemas sociais ou crises potenciais</td>
+</tr><tr style="border-bottom: 2px solid black;">
+<td>Avaliar metas e estratégias globais/setoriais</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td rowspan=7 style="border-bottom: 2px solid black;"><b>Escolha e valorização</b></td><td>Disponibilidade de dados</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Possibilidade de comparação intertemporal e supra-regional</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Consistência, universalidade e confiabilidade dos dados</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Validade dos dados</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Significância conceitual</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Capacidade de diferenciação</td>
+</tr><tr style="border-bottom: 2px solid black;">
+<td>Equilíbrio ou tentativa de evitar sobreposições temáticas dentro de um grupo de indicadores</td>
+</tr><tr>
+<td rowspan=6 style="border-bottom: 3px solid black;"><b>Indicadores Sociais</b></td><td style="border-bottom: 1px dashed grey;">Indicadores de nutrição</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Indicadores de saúde</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Indicadores ambientais</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Indicadores habitacionais</td>
+</tr><tr style="border-bottom: 1px dashed grey;">
+<td>Indicadores educacionais</td>
+</tr><tr style="border-bottom: 3px solid black;">
+<td>Índice de Desenvolvimento Humano (IDH)</td>
+</tr></table>
+
+<p class="ref">Fonte: Desenvolvimento próprio com base no artigo de Siedenberg (2011).</p>
+
 Firjan
 ======================================================================
 
@@ -160,22 +277,20 @@ Educação (10 melhores municípios) {data-navmenu="Educação"}
 Column {width=1000 .tabset .tabset-fade}
 ------------------------------------------------------------------------
 
-### Prova Brasil - Top 10 mun Firjan
+### SAEB (2015-2019) - Top 10 mun Firjan
 
 ```{r}
-oco <- educacao_prova_brasil_mun %>%
-  filter(SIGLA_UF == "MT", NOME_MUNICIPIO %in% c("LUCAS DO RIO VERDE", "CUIABA", "DIAMANTINO", "SORRISO", "CAMPO NOVO DO PARECIS", "SINOP", "CAMPO VERDE", "NOVA MUTUM", "RONDONOPOLIS", "PRIMAVERA DO LESTE")) %>%
-  plot_ly(size = ~NU_PRESENTES, showlegend = T, colors = "inferno", hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_LP, "<br>", "Média (Matemática):", MEDIA_MT, "<br>", "Município:", NOME_MUNICIPIO, "<br>", "Presentes na prova:", NU_PRESENTES)) %>%
-  add_markers(x = ~MEDIA_MT, y = ~MEDIA_LP, alpha = 0.6, color = ~NOME_MUNICIPIO) %>%
+oco <- saeb_completa %>%
+  filter(NO_MUNICIPIO %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste")) %>%
+  plot_ly(x = ~MEDIA_9_LP, y = ~MEDIA_9_MT, frame = ~ano, showlegend = T, hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_9_LP, "<br>", "Média (Matemática):", MEDIA_9_MT, "<br>", "Município:", NO_MUNICIPIO, "<br>")) %>%
+  add_markers(color = ~NO_MUNICIPIO, colors = "inferno", alpha = 0.6) %>%
   layout(title = '',
-         xaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
-         yaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
-         legend = list(orientation = 'h')) 
+         yaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
+         xaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
+         legend = list(orientation = 'h', y = -0.55)) 
+
 oco
-
-
 ```
-
 
 ### ENEM por escola: 2005-2015
 
@@ -295,20 +410,20 @@ Educação (Comparação entre 10 melhores e 10 piores) {data-navmenu="Educaçã
 Column {width=1000 .tabset .tabset-fade}
 ------------------------------------------------------------------------
 
-### Prova Brasil - comparação
+### SAEB - comparação, 2015-2019
+
 
 ```{r}
-oco2 <- educacao_prova_brasil_mun %>%
-  filter(SIGLA_UF == "MT", NOME_MUNICIPIO %in% c("GENERAL CARNEIRO", "CAMPINAPOLIS", "NOVA NAZARE", "VILA RICA", "GAUCHA DO NORTE", "DENISE", "PONTE BRANCA", "SAO FELIX DO ARAGUAIA", "SANTA TEREZINHA", "ALTO BOA VISTA")) %>%
-  plot_ly(size = ~NU_PRESENTES, showlegend = T, colors = "viridis", hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_LP, "<br>", "Média (Matemática):", MEDIA_MT, "<br>", "Município:", NOME_MUNICIPIO, "<br>", "Presentes na prova:", NU_PRESENTES)) %>%
-  add_markers(x = ~MEDIA_MT, y = ~MEDIA_LP, alpha = 0.6, color = ~NOME_MUNICIPIO) %>%
+oco2 <- saeb_completa %>%
+  filter(NO_MUNICIPIO %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista")) %>%
+  plot_ly(x = ~MEDIA_9_LP, y = ~MEDIA_9_MT, frame = ~ano, showlegend = T, hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_9_LP, "<br>", "Média (Matemática):", MEDIA_9_MT, "<br>", "Município:", NO_MUNICIPIO, "<br>")) %>%
+  add_markers(color = ~NO_MUNICIPIO, colors = "viridis", alpha = 0.6) %>%
   layout(title = '',
-         xaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
-         yaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
-         legend = list(orientation = 'h')) 
+         yaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
+         xaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
+         legend = list(orientation = 'h', y = -0.55)) 
 
 subplot(oco, oco2, nrows = 1)
-
 
 ```
 
@@ -401,7 +516,7 @@ subplot8 <- desgraca %>%
 
 subplot(subplot1, subplot2, subplot3, subplot4, subplot6, subplot8, nrows = 3, shareX = F)
 
-
+  
 ```
 
 Considerações Finais {data-navmenu="Considerações Finais"}

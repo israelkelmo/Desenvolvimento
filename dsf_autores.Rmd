@@ -35,6 +35,37 @@ rais <- rais[2:5573,]
 gini_mun <- import("dados/ginibr.xlsx")
 pib_per_capta <- import("dados/RENDABR10.dbf")
 
+###
+saeb_2019 <- import("saeb_2019.xlsx")
+saeb_2019 <- saeb_2019[,1:10]
+saeb_2019 <- saeb_2019[, c(1, 2, 4, 5, 6, 9, 10)]
+saeb_2019 <- saeb_2019 %>%
+  mutate(ano = 2019)
+
+###
+
+###
+saeb_2017 <- import("saeb_2017.xlsx")
+saeb_2017 <- saeb_2017[,1:10]
+saeb_2017 <- saeb_2017[, c(1, 2, 4, 5, 6, 9, 10)]
+saeb_2017 <- saeb_2017 %>%
+  mutate(ano = 2017)
+
+###
+
+saeb_2015 <- import("saeb_2015.xls")
+saeb_2015 <- saeb_2015 %>%
+  mutate(CO_UF = coduf, NO_UF = uf, NO_MUNICIPIO = mun, DEPENDENCIA_ADM = tipo, LOCALIZACAO = localizacao, MEDIA_9_LP = lp, MEDIA_9_MT = mat, ano = 2015)
+saeb_2015 <- saeb_2015[, 10:16]
+saeb_2015 <- saeb_2015 %>%
+  mutate(ano = 2015)
+
+###
+
+saeb_completa <- saeb_2019 %>%
+  bind_rows(saeb_2017) %>%
+  bind_rows(saeb_2015)
+
 ########
 municipios2 <- municipios %>%
   mutate(lat = as.numeric(lat), lng = as.numeric(lng), ifdm = as.numeric(gsub(",", ".", as.character(ifdm))), emp_rend = as.numeric(gsub(",", ".", as.character(emp_rend))), edu = as.numeric(gsub(",", ".", as.character(edu))))
@@ -203,7 +234,7 @@ A educação formal, clássica forma de investimento em capital humano, diferent
 <p class="section">2.3 Educação e Desenvolvimento</p>
 
 <p class="normal">
-Ao aplicar a analise de dados proposta por \citeonline{bibliometrix} nos dados obtidos no Scopus sobre "Educação e Desenvolvimento Econômico", é obtida a relação dos artigos mais citados no assunto --- e suas respectivas clusterizações --- da forma tal qual é exibida na figura abaixo.</p>
+Ao aplicar a analise de dados proposta por Aria e Cuccurullo (2017) nos dados obtidos no Scopus sobre "Educação e Desenvolvimento Econômico", é obtida a relação dos artigos mais citados no assunto --- e suas respectivas clusterizações --- da forma tal qual é exibida na figura abaixo.</p>
 
 <p class="tabela">Figura 2 - <i>Network</i> de co-citação referente ao tema "Educação e Desenvolvimento".</p>
 <center>
@@ -351,7 +382,7 @@ municipios2 %>%
 <p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pela Firjan.</p>
 
 <p class="normal">
-Como esperado, é observada uma concentração dos municípios dentro dos valores próximo ao amplo desenvolvimento, representando que os municípios mato-grossenses apresentam um bom desempenho em ambos aspectos quando observados pela ótica do indicador. Ao ranquear os dados, observa-se que Lucas do Rio Verde foi o município com melhor desempenho do Estado, superando a capital que aparece logo em seguida. A Tabela 3 apresenta os dez principais municípios em questões de desenvolvimento social e econômico pela ótica da Firjan.</p>
+Como esperado, é observada uma concentração dos municípios dentro dos valores próximo ao amplo desenvolvimento, representando que os municípios mato-grossenses apresentam um bom desempenho em ambos aspectos quando observados pela ótica do indicador. Ao ranquear os dados, observa-se que Lucas do Rio Verde foi o município com melhor desempenho do Estado, superando a capital que aparece logo em seguida. Desta forma, se for utilizada a ótica proporcionada pela Firjan dentro das propostas apontadas por North (1959), os municípios mato-grossenses estão, teoricamente, em estado de desenvolvimento social e econômico de forma positiva pois são capazes de apresentar um alto desempenho na área educacional quanto uma capacidade de oferecer emprego, saúde e renda para a sua população. A Tabela 3 apresenta os dez principais municípios em questões de desenvolvimento social e econômico pela ótica da Firjan.</p>
 
 <p class="tabela">Tabela 3 - IFDM dos municípios mato-grossenses, 2016.</p>
 
@@ -375,25 +406,24 @@ A educação, como dito anteriormente, é uma das três áreas componentes do Í
 Vale destacar que o IFDM (Educação) inclui apenas um indicador que sinaliza o desempenho dos alunos, que é o IDEB, os demais indicadores não são suficientes para inferir se os alunos tiveram ou não um processo educacional de boa qualidade. Pois, assim como foi dito por Duflo (2001), a qualidade do ensino não depende tanto da quantidade de anos/horas de estudo e da escolaridade do professor. Existem fatores que interferem no desenvolvimento dos alunos que vão muito além da sala de aula. Pode-se apontar alguns como os fatores não institucionais, mencionados por Heckman (2003), e uma variável subjetiva, mencionada por Lucas (1988), ambos autores citados anteriormente na revisão bibliográfica.</p>
 
 <p class="normal">
-Para constatar se os IFDM educacionais, anteriormente apresentados na Tabela 3, condizem com a realidade dos municípios em questão, são analisados a taxa de abandono de discentes de institutos/escolas/colégios federais, estaduais, municipais e privadas. Na figura abaixo, é ilustrado o desempenho das escolas na Prova Brasil realizada no ano de 2011, onde são relacionadas a média obtida pela escola em cada um dos campos exigidos no exame --- Língua Portuguesa e Matemática ---; sendo o valor máximo para cada um dos campos estando em 500 pontos.</p>
+Para constatar se os IFDM educacionais, anteriormente apresentados na Tabela 3, condizem com a realidade dos municípios em questão, são analisados a taxa de abandono de discentes de institutos/escolas/colégios federais, estaduais, municipais e privadas. Na figura abaixo, é ilustrado o desempenho das escolas no SAEB, --- antiga Prova Brasil --- realizada no ano de 2015-2019, onde são relacionadas a média obtida pela escola em cada um dos campos exigidos no exame --- Língua Portuguesa e Matemática ---; sendo o valor máximo para cada um dos campos estando em 500 pontos.</p>
 
-<p class="tabela">Figura 5 - Prova Brasil, 2011.</p>
+<p class="tabela">Figura 5 - SAEB, 2015-2019.</p>
 
 <center>
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="90%"}
-oco <- educacao_prova_brasil_mun %>%
-  filter(SIGLA_UF == "MT", NOME_MUNICIPIO %in% c("LUCAS DO RIO VERDE", "CUIABA", "DIAMANTINO", "SORRISO", "CAMPO NOVO DO PARECIS", "SINOP", "CAMPO VERDE", "NOVA MUTUM", "RONDONOPOLIS", "PRIMAVERA DO LESTE")) %>%
-  plot_ly(size = ~NU_PRESENTES, showlegend = T, colors = "inferno", hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_LP, "<br>", "Média (Matemática):", MEDIA_MT, "<br>", "Município:", NOME_MUNICIPIO, "<br>", "Presentes na prova:", NU_PRESENTES)) %>%
-  add_markers(x = ~MEDIA_MT, y = ~MEDIA_LP, alpha = 0.6, color = ~NOME_MUNICIPIO) %>%
+oco <- saeb_completa %>%
+  filter(NO_MUNICIPIO %in% c("Lucas do Rio Verde", "Cuiabá", "Diamantino", "Sorriso", "Campo Novo do Parecis", "Sinop", "Campo Verde", "Nova Mutum", "Rondonópolis", "Primavera do Leste")) %>%
+  plot_ly(x = ~MEDIA_9_LP, y = ~MEDIA_9_MT, frame = ~ano, showlegend = T, hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_9_LP, "<br>", "Média (Matemática):", MEDIA_9_MT, "<br>", "Município:", NO_MUNICIPIO, "<br>")) %>%
+  add_markers(color = ~NO_MUNICIPIO, colors = "inferno", alpha = 0.6) %>%
   layout(title = '',
-         xaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
-         yaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
-         legend = list(orientation = "h",   # show entries horizontally
-                     xanchor = "center",  # use center of legend as anchor
-                     x = 0.5, y = -0.2)) 
-oco
+         yaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
+         xaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
+         legend = list(orientation = 'h', y = -0.55)) 
 
+oco
 ```
+
 </center>
 
 <p class="ref">Fonte: Desenvolvido pelo autor com base nos dados disponibilizados pelo INEP.</p>
@@ -564,20 +594,20 @@ subplot(subplot1, subplot2, subplot3, subplot4, nrows = 2, shareX = T)
 A sessão anterior demonstrou que os resultados do desempenho educacional dos dez melhores municípios classificados pelo IFDM não foram positivos. Entretanto, dever-se-á comparar o resultado entre os extremos do indicador para observar, na teoria, uma discrepância no desempenho entre os municípios. Nesta sessão, compararemos os valores obtidos pelos dez melhores classificados pelo IFDM e os dez municípios com as dez piores classificações.</p>
 
 <p class="normal">
-Ao analisar os resultados das escolas que participaram da Prova Brasil no ano de 2011, percebemos que o desempenho foi semelhante; neste caso, a diferença entre os municípios com melhor classificação foi a quantidade de escolas que participaram do exame. A figura abaixo ilustra a comparação do desempenho entre os vinte municípios selecionados.</p>
+Ao analisar os resultados das escolas que participaram do SAEB no ano de 2015-2019, percebemos que o desempenho foi semelhante; neste caso, a diferença entre os municípios com melhor classificação foi a quantidade de escolas que participaram do exame. A figura abaixo ilustra a comparação do desempenho entre os vinte municípios selecionados.</p>
 
-<p class="tabela">Figura 11 - Comparação Prova Brasil, 2011.</p>
+<p class="tabela">Figura 11 - Comparação SAEB, 2015-2019.</p>
 
 <center>
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, out.width="100%"}
-oco2 <- educacao_prova_brasil_mun %>%
-  filter(SIGLA_UF == "MT", NOME_MUNICIPIO %in% c("GENERAL CARNEIRO", "CAMPINAPOLIS", "NOVA NAZARE", "VILA RICA", "GAUCHA DO NORTE", "DENISE", "PONTE BRANCA", "SAO FELIX DO ARAGUAIA", "SANTA TEREZINHA", "ALTO BOA VISTA")) %>%
-  plot_ly(size = ~NU_PRESENTES, showlegend = T, colors = "viridis", hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_LP, "<br>", "Média (Matemática):", MEDIA_MT, "<br>", "Município:", NOME_MUNICIPIO, "<br>", "Presentes na prova:", NU_PRESENTES)) %>%
-  add_markers(x = ~MEDIA_MT, y = ~MEDIA_LP, alpha = 0.6, color = ~NOME_MUNICIPIO) %>%
+oco2 <- saeb_completa %>%
+  filter(NO_MUNICIPIO %in% c("General Carneiro", "Campinápolis", "Nova Nazaré", "Vila Rica", "Gaúcha do Norte", "Denise", "Ponte Branca", "São Félix do Araguaia", "Santa Terezinha", "Alto Boa Vista")) %>%
+  plot_ly(x = ~MEDIA_9_LP, y = ~MEDIA_9_MT, frame = ~ano, showlegend = T, hoverinfo = "text", text = ~paste("Média (LP):", MEDIA_9_LP, "<br>", "Média (Matemática):", MEDIA_9_MT, "<br>", "Município:", NO_MUNICIPIO, "<br>")) %>%
+  add_markers(color = ~NO_MUNICIPIO, colors = "viridis", alpha = 0.6) %>%
   layout(title = '',
-         xaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
-         yaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
-         legend = list(orientation = 'h')) 
+         yaxis = list(showgrid = FALSE, title = "Média (Matemática)"),
+         xaxis = list(showgrid = FALSE, title = "Média (Língua Portuguesa)"), 
+         legend = list(orientation = 'h', y = -0.55)) 
 
 subplot(oco, oco2, nrows = 1)
 
